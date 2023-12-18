@@ -1,4 +1,4 @@
-//CMPE351
+//  CMPE351
 //PROJECT TO SIMULATE THE SERVICE OF JOBS IN CPU SCHEDULING USING BOTH PREEMPTIVE AND NON PREEMPTIVE 
 #include<stdio.h>
 #include<iostream>
@@ -370,13 +370,19 @@ struct node *FSFC(struct node *header, struct node *header2)
 void display(struct node *header2)
 {
 	int a = 1;
+	int avgtime = 0;
+	int average;
 	struct node *temp;
 	temp = header2;
 	while(temp != NULL)
 	{
-		cout<<"Process"<<a<<temp->burst<<": ";
+		cout<<"Process"<<a<<"waiting time is "<<temp->burst;
+		avgtime += temp->burst;
 		temp = temp->next;
 		a++;
 	}
+
+	average = avgtime/(a-1);
+	cout<<"Average waiting time is ";
 	cout<<endl;
 }
