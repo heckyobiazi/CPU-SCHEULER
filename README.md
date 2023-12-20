@@ -9,6 +9,7 @@
 #include<cstdlib>
 
 using namespace std;
+
 int globalstop = 1;
 int prem= 0;
 
@@ -24,8 +25,9 @@ struct node *createnode(int, int , int, int);
 struct node *createmininode(int );
 int is_empty(struct node *);
 struct node *insertFront(struct node *, int,int,int,int);
+struct node *insertminiFront(struct node *, int);
 struct node *insertBack(struct node *, int, int,int,int);
-struct node *insertminiBack(struct node *header, int item1);
+struct node *insertminiBack(struct node *, int);
 void insertAfter(struct node *, int, int, int,int);
 struct node *deleteFront(struct node *);
 void display(struct node *);
@@ -44,7 +46,7 @@ void NONPREEMPT();
 int main(int argc, char* argv[])
 {
 	if (argc != 5) {
-        cout << "Usage: " << argv[0] << " -f inputFileName -o outputFileName" <<endl;
+        std::cout<< "Usage: " << argv[0] << " -f inputFileName -o outputFileName" <<endl;
         return 1;
     }
 
@@ -64,7 +66,7 @@ int main(int argc, char* argv[])
     }
 
     if (inputFile.empty() || outputFile.empty()) {
-       cout << "Invalid command-line arguments. Usage: " << argv[0] << " -f inputFileName -o outputFileName" <<endl;
+       std::cout<<"Invalid command-line arguments. Usage: " << argv[0] << " -f inputFileName -o outputFileName" <<endl;
         return 1;
     }
 	
@@ -115,7 +117,7 @@ int main(int argc, char* argv[])
             }
         }
     } else {
-        cout << "Error opening input file: " << inputFile << endl;
+        std::cout << "Error opening input file: " << inputFile << endl;
         return 1;
     }
       
@@ -126,7 +128,7 @@ int main(int argc, char* argv[])
 	int temp4;
 	if(header == NULL)
 	{
-      cout<<"LIST IS EMPTY";
+      std::cout<<"LIST IS EMPTY";
 	}
 	else
 	{
@@ -166,8 +168,8 @@ int main(int argc, char* argv[])
 	   
 	
 	int output;
-cout << "These are the various options you can choose from:\n 1. Scheduling\n 2. Preemptive ( " <<premmode<< ") \n 3. Show Output\n 4. Exit\n";
-cout<<"Option";
+std::cout << "These are the various options you can choose from:\n 1. Scheduling\n 2. Preemptive ( " <<premmode<< ") \n 3. Show Output\n 4. Exit\n";
+std::cout<<"Option";
 cin>>output;
 
 while(globalstop ==1)
@@ -177,40 +179,40 @@ switch(output)
 {
 	case 1: {
 	int schedule;	
-	cout<<"This is the scheduling form, Please choose which scheduking method you want"<<endl;
-	cout<<"1. First Come First Serve \n 2.Shortest Job First \n 3. Priority schdeuling\n 4. Round Robin" ;
+	std::cout<<"This is the scheduling form, Please choose which scheduking method you want"<<endl;
+	std::cout<<"1. First Come First Serve \n 2.Shortest Job First \n 3. Priority schdeuling\n 4. Round Robin" ;
 	cin>>schedule;
 	
 	switch(schedule)
 	{
 		case 1:{
-			cout<<"This is First Come First Serve"<<endl;
+			std::cout<<"This is First Come First Serve"<<endl;
 			header2 = NULL;
 			FSFC(header, header2);
 			break;
 		}
 		
 		case 2:{
-			cout<<"This is Shortest Job First"<<endl;
+			std::cout<<"This is Shortest Job First"<<endl;
 			header2 = NULL;
 			SJF(header, header2);
 			break;
 		}
 		
 		case 3:{
-			cout<<"This is Priority Scheduling"<<endl;
+			std::cout<<"This is Priority Scheduling"<<endl;
 			PRIORITY();
 			break;
 		}
 		
 		case 4:{
-			cout<<"This is Round Robin"<<endl;
+			std::cout<<"This is Round Robin"<<endl;
 			RR(int, int);
 			break;
 		}
 		
 		default:{
-			cout<<"Wrong input"<<endl;
+			std::cout<<"Wrong input"<<endl;
 			exit(1);
 			break;
 		}
@@ -221,18 +223,18 @@ switch(output)
 	}
 	case 2:{
 		int mode;
-		cout<<"Please Select Your Mode. \n 1.Preemptive \n 2.Non-Preemptive";
+		std::cout<<"Please Select Your Mode. \n 1.Preemptive \n 2.Non-Preemptive";
 		cin>>mode;
 		switch(mode)
 		{
 			case 1:{
-				cout<<"This is the preemptive mode";
+				std::cout<<"This is the preemptive mode";
 				prem = 1;
 				break;
 			}
 			
 			case 2:{
-				cout<<"This is the non-preemptive mode";
+				std::cout<<"This is the non-preemptive mode";
 				prem = 0;
 				break;
 			}
@@ -248,7 +250,7 @@ switch(output)
 	
 	case 4:{
 		bool ans;
-		cout<<"Are you sure you want to exit the simulation:";
+		std::cout<<"Are you sure you want to exit the simulation:";
 		cin>>ans;
 		if(ans)
 		{
@@ -314,6 +316,17 @@ struct node *insertFront(struct node *header, int item1, int item2, int item3, i
 	
 	return header;
 }
+
+struct node *insertminiFront(struct node *header, int item)
+{
+	struct node *temp;
+	temp = createmininode(item);
+	temp->next = header;
+	header =  temp;
+	
+	return header;
+}
+
 struct node *insertBack(struct node *header, int item1, int item2, int item3, int item4)
 {
 	struct node *temp;
@@ -355,7 +368,7 @@ struct node *deleteFront(struct node *header)
 {
 	if(header == NULL)
 	{
-		cout<<"The list is empty";
+		std::cout<<"The list is empty";
 		exit(1);
 	}
 	else
@@ -395,62 +408,112 @@ struct node *SJF(struct node *header , struct node *header2)
 {
 	if(prem == 0 )
 	{
-	cout<<"We are running a non-preemptive shortest job first scheduler";
+	std::cout<<"We are running a non-preemptive shortest job first scheduler";
     int temp1;
 	int temp2;
 	int temp3;
+	int temp4;
+	int totalprocess;
+	struct node *header3;
+     header3 = header;
 	if(header == NULL)
 	{
-      cout<<"LIST IS EMPTY";
+      std::cout<<"LIST IS EMPTY";
 	}
 	else
 	{
-		struct node *temp;
-		while(header->next != NULL)
+		while(header != NULL)
 		{
-		    temp = header->next->next;
-			while(temp != NULL)
-			{
-          if(header->next->burst > temp->burst)
-		  {
-             temp1 = header->burst;
-			 header->burst = temp->burst;
-			 temp->burst = temp1;
 
-             temp2 = header->arrival;
-			 header->arrival = temp->arrival;
-			 temp->arrival = temp2;
-
-			 temp3 = header->prority;
-			 header->burst = temp->burst;
-			 temp->burst = temp3;
-		  }
-		  temp = temp->next;
-		  }
+		 totalprocess = header->numbering;	
+         
 		     header = header->next;
 		}
 	}
+
+	 header = header3;
     
-	struct node *header3;
-	header3 = header;
-	 while(header != NULL)
+	struct node *temp;	
+	temp = NULL;
+	 
+	 for(int i=0; i<totalprocess; i++)
 	   {
 		if(header2 == NULL)
 		{
 			 header2 = createmininode(header->arrival);
 		}
-		 else{
-		 header2 = insertminiBack(header2, (header->burst + header3->burst) - header->next->arrival);
+		 else
+		 {   
+			/*if(i == header3->arrival)
+			{
+				header3 = header3->next;
+			}
+			a = header3->burst-1;*/
+			if(header->arrival == i ||  header->arrival < i)
+			{
+			if(temp == NULL)
+			{
+            temp = createnode(header->burst, header->arrival, header->prority, header->numbering);
+			}
+			else
+			{
+				if(header->burst > temp->burst)
+				{
+					temp = insertBack(temp, header->burst, header->arrival, header->prority,header->numbering);
+				}
+				else{
+					temp = insertFront(temp, header->burst, header->arrival, header->prority,header->numbering);
+				}
+				header = header->next;
+			}
+			while(temp->next != NULL)
+		{
+			struct node *tp;
+		    tp = temp->next;
+			while(tp != NULL)
+			{
+          if(temp->burst >= tp->burst)
+		  {//putting another function here for a no swap unless you focus on thier arrival time if they are equal if they are 
+             temp1 = temp->burst;
+			 temp->burst = tp->burst;
+			 tp->burst = temp1;
+
+            temp2 = temp->arrival;
+			 temp->arrival = tp->arrival;
+			 tp->arrival = temp2;
+
+			 temp3 = temp->prority;
+			 temp->prority = tp->prority;
+			 tp->prority = temp3;
+
+			 temp4 = temp->numbering;
+			 temp->numbering = tp->numbering;
+			 tp->numbering = temp4;
+		  }
+		  tp = tp->next;
+		  }
+		     temp = temp->next;
+		}
+		 }
+		 else
+		 {
+         header2 = insertminiBack(header2, (header2->burst + temp->burst) - temp->arrival);
 		 header2 = header2->next;
-		 header = header->next;
-		 header3 = header3->next;
+		 temp = temp->next;
+		 }
+		 }
+	   }
+		 //i need to put the header to read the arrival time of each  process that has the same arrival time and pick the smallest and whilist
+		 //picking the smallest, also putting it in another ll, hmm, i think that will work, after each iteration. okay, tommorow we will work
+		 //with putting the ll in a loop and in that loop, it checks if it the arrival time behind it has shorter burst time, to evaluate what will hqppen,
+		 //but normally, we are to check it in a loop to know which process whill be picked after it has ran the amountvof burst time
+		 //and then putting the ones that are not rady in another struct node* or ll i guess;
 		 }
 	   }
 
-		 return header2;
-	}
 
-}
+
+
 
 
 void display(struct node *header2)
