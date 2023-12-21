@@ -38,11 +38,6 @@ struct node *SJF(struct node * , struct node * );
 void PRIORITY(int, int , int);
 void RR(int , int );
 
-void PREEMPT();
-void NONPREEMPT();
-
-
-
 int main(int argc, char* argv[])
 {
 	if (argc != 5) {
@@ -473,7 +468,25 @@ struct node *SJF(struct node *header , struct node *header2)
 			while(tp != NULL)
 			{
           if(temp->burst >= tp->burst)
-		  {//putting another function here for a no swap unless you focus on thier arrival time if they are equal if they are 
+		  {//putting another function here for a swap unless you focus on thier arrival time if they are equal if they are 
+		    if(temp->arrival > tp->arrival)
+			{
+             temp1 = temp->burst;
+			 temp->burst = tp->burst;
+			 tp->burst = temp1;
+
+            temp2 = temp->arrival;
+			 temp->arrival = tp->arrival;
+			 tp->arrival = temp2;
+
+			 temp3 = temp->prority;
+			 temp->prority = tp->prority;
+			 tp->prority = temp3;
+
+			 temp4 = temp->numbering;
+			 temp->numbering = tp->numbering;
+			 tp->numbering = temp4;
+			}
              temp1 = temp->burst;
 			 temp->burst = tp->burst;
 			 tp->burst = temp1;
@@ -503,18 +516,27 @@ struct node *SJF(struct node *header , struct node *header2)
 		 }
 		 }
 	   }
+
+	   while(temp != NULL)
+	   {
+		 header2 = insertminiBack(header2, (header2->burst + temp->burst) - temp->arrival);
+		 header2 = header2->next;
+		 temp = temp->next;
+	   }
 		 //i need to put the header to read the arrival time of each  process that has the same arrival time and pick the smallest and whilist
 		 //picking the smallest, also putting it in another ll, hmm, i think that will work, after each iteration. okay, tommorow we will work
 		 //with putting the ll in a loop and in that loop, it checks if it the arrival time behind it has shorter burst time, to evaluate what will hqppen,
 		 //but normally, we are to check it in a loop to know which process whill be picked after it has ran the amountvof burst time
 		 //and then putting the ones that are not rady in another struct node* or ll i guess;
+		 return header2;
 		 }
+
+   if(prem == 1)
+   {
+	std::cout<<"This is the preemptive mode";
+   }
+
 	   }
-
-
-
-
-
 
 void display(struct node *header2)
 {
