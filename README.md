@@ -30,16 +30,24 @@ struct node *insertBack(struct node *, int, int,int,int);
 struct node *insertminiBack(struct node *, int);
 void insertAfter(struct node *, int, int, int,int);
 struct node *deleteFront(struct node *);
+void deleteAfter(struct node *afternode);
+struct node *moveBeginning(struct node *header, struct node *nodetobegin);
 void display(struct node *);
+struct node *swapnodes(struct node *,struct node *);
+int count(struct node *);
+void printlist2(struct node *header2);
+void sortarrival(struct node **, int);
+void sortburst(struct node **, int);
+void printlist(struct node *header);
 
-
-struct node *FSFC(struct node *, struct node *);
+struct node *FSFC(struct node *, struct node **);
 struct node *SJF(struct node * , struct node * );
 void PRIORITY(int, int , int);
 void RR(int , int );
 
 int main(int argc, char* argv[])
 {
+  /*
 	if (argc != 5) {
         std::cout<< "Usage: " << argv[0] << " -f inputFileName -o outputFileName" <<endl;
         return 1;
@@ -115,60 +123,63 @@ int main(int argc, char* argv[])
         std::cout << "Error opening input file: " << inputFile << endl;
         return 1;
     }
+     */
       
+      	struct node *header = NULL;
+	struct node *header2 ;
+	struct node *newheader;
+	int item_1, item_2, item_3, item_4;
+	item_4 = 1;
+	 int a = 0;
+	 int mini_arr[3];
+	 char c;
+	 char digit_str[2];
+	 int cnt;
+	 string premmode;
+ if(prem == 1)
+	 {
+		premmode = "ON";
+	 }
+	 else
+	 {
+		premmode = "OFF";
+	 }
+      
+       header = createnode(12, 0, 0, 1);
+       header = insertBack(header, 4, 0, 0, 2);
+       header = insertBack(header, 2, 0, 0, 3);
+       header = insertBack(header, 6, 0, 0, 4);
+       header = insertBack(header, 5, 0, 0, 5);
+       
+      int size = 0;
+	  size = count(header);
     
-    int temp1;
+   /* int temp1;
 	int temp2;
 	int temp3;
-	int temp4;
+	int temp4;*/
 	if(header == NULL)
 	{
       std::cout<<"LIST IS EMPTY";
 	}
 	else
 	{
-		struct node *temp;
-		while(header->next != NULL)
-		{
-		    temp = header->next;
-			while(temp != NULL)
-			{
-          if(header->arrival > temp->arrival)
-		  {
-             temp1 = header->burst;
-			 header->burst = temp->burst;
-			 temp->burst = temp1;
-
-             temp2 = header->arrival;
-			 header->arrival = temp->arrival;
-			 temp->arrival = temp2;
-
-			 temp3 = header->prority;
-			 header->burst = temp->burst;
-			 temp->burst = temp3;
-
-			 temp4 = header->numbering;
-			 header->numbering = temp->numbering;
-			 temp->numbering = temp4;
-		  }
-		  temp = temp->next;
-		  }
-		     header = header->next;
-		}
+       sortarrival(&header, size);
 	}
+	//cout<<"\n";
+	 
+	
 
-    
 	double averaget;
 	int waittime;
 	   
 	
 	int output;
+	while(globalstop == 1)
+	{
 std::cout << "These are the various options you can choose from:\n 1. Scheduling\n 2. Preemptive ( " <<premmode<< ") \n 3. Show Output\n 4. Exit\n";
 std::cout<<"Option";
 cin>>output;
-
-while(globalstop ==1)
-{
 
 switch(output)
 {
@@ -183,26 +194,25 @@ switch(output)
 		case 1:{
 			std::cout<<"This is First Come First Serve"<<endl;
 			header2 = NULL;
-			FSFC(header, header2);
+	   	newheader = FSFC(header, &header2);
+		cout<<"\nreturned success";
 			break;
 		}
 		
 		case 2:{
 			std::cout<<"This is Shortest Job First"<<endl;
 			header2 = NULL;
-			SJF(header, header2);
+	       SJF(header, header2);
 			break;
 		}
 		
 		case 3:{
 			std::cout<<"This is Priority Scheduling"<<endl;
-			PRIORITY();
 			break;
 		}
 		
 		case 4:{
 			std::cout<<"This is Round Robin"<<endl;
-			RR(int, int);
 			break;
 		}
 		
@@ -245,15 +255,16 @@ switch(output)
 	
 	case 4:{
 		bool ans;
-		std::cout<<"Are you sure you want to exit the simulation:";
+		std::cout<<"Are you sure you want to exit the simulation:(1 for yes/0 for no)";
 		cin>>ans;
-		if(ans)
+		if(ans == 1)
 		{
 			globalstop = 0;
 			display(header2);
 			exit(1);
 		}
-		else {
+		else 
+		{
 			globalstop = 1;
 		}
 		break;
@@ -377,24 +388,191 @@ struct node *deleteFront(struct node *header)
 	return header;
 }
 
-struct node *FSFC(struct node *header, struct node *header2)
+void deleteAfter(struct node *afternode)
 {
-	prem = 0;
-	   while(header != NULL)
-	   {
-		if(header2 == NULL)
-		{
-			 header2 = createmininode(0);
-		}
-		 else{
-		 header2 = insertminiBack(header2, header->burst + header2->burst);
-		 header2 = header2->next;
-		 header = header->next;
-		 }
-		
-	   }
+	if(afternode->next == NULL)
+	{
+		cout<<"The list cannot be delete it";
+		exit(1);
+	}
+	else
+	{
+		struct node *temp;
+		temp = afternode->next;
+		afternode->next = temp->next;
+		free(temp);
+	}
+	
+}
 
-		 return header2;
+struct node *moveBeginning(struct node *header, struct node *nodetobegin)
+{
+	struct node*temp;
+	struct node *tmp;
+	int w,x,y,z;
+	w = nodetobegin->next->burst;
+	x = nodetobegin->next->arrival;
+	y = nodetobegin->next->prority;
+	z = nodetobegin->next->numbering;
+    deleteAfter(nodetobegin);
+    temp = createnode(w,x,y,z);
+    temp->next = header;
+    header = temp;
+		
+		return header;
+}
+
+struct node *swapnodes(struct node *temp, struct node *tp)
+{
+	int temp1, temp2, temp3, temp4;
+	struct node *t = tp->next;
+	tp->next = temp;
+	temp->next = t;
+			 return tp;
+}
+
+void sortburst(struct node **header, int size)
+{
+	struct node **ht;
+	int swap;
+	for(int i=0; i<=size-1; i++)
+	{
+		ht = header;
+		swap =0;
+		for(int j=0; j< size-i-1; j++)
+		{
+			struct node *h1 = *ht;
+			struct node *h2 = h1->next;
+			
+			if(h1->burst > h2->burst)
+			{
+				*ht = swapnodes(h1,h2);
+				swap =1;
+			}
+			ht = &(*ht)->next;
+		}
+		
+		if(swap ==0)
+		{
+			break;
+			
+		}
+	}
+}
+
+void sortarrival(struct node **header, int size)
+{
+	struct node **ht;
+	int swap;
+	for(int i=0; i<=size-1; i++)
+	{
+		ht = header;
+		swap =0;
+		for(int j=0; j< size-i-1; j++)
+		{
+			struct node *h1 = *ht;
+			struct node *h2 = h1->next;
+			
+			if(h1->arrival > h2->arrival)
+			{
+				*ht = swapnodes(h1,h2);
+				swap =1;
+			}
+			ht = &(*ht)->next;
+		}
+		
+		if(swap ==0)
+		{
+			break;
+			
+		}
+	}
+}
+
+int count(struct node *header)
+{
+	struct node *temp;
+	temp = header;
+	int cnt;
+	 cnt = 0;
+	while(temp != NULL)
+	{
+		cnt = cnt + 1;
+		temp = temp->next;		
+    }
+ return cnt;
+
+}
+
+void printlist(struct node *header)
+{
+	if(header == NULL)
+	{
+		cout<<"The list is empty";
+		exit(1);
+	}
+	else
+	{
+		struct node *temp;
+		int x;
+		temp = header;
+		while(temp != NULL)
+		{
+		x = temp->burst;
+		cout<<x<<", ";
+		temp = temp->next;	
+		}
+		cout<<endl;
+	}
+}
+
+void printlist2(struct node **header2)
+ {
+    struct node **temp = header2;
+    while (temp != NULL) {
+        cout << (*temp)->burst << " ";
+        temp = &((*temp)->next);
+    }
+    cout << endl;
+}
+
+
+struct node *FSFC(struct node *header, struct node **header2)
+{
+	
+	
+	cout<<"\n";
+	int a;
+	int b;
+	int wt = 0;
+	prem = 0;
+	struct node *temp;
+	struct node **ht;
+	temp = header;
+	ht = header2;
+	
+	   while(temp != NULL)
+	   {
+	if (*ht == NULL) {
+    *ht = createmininode(0);
+} 
+else 
+{
+    a = (*ht)->burst;
+    
+    b = temp->burst;
+    
+    wt = b + a;
+   
+    *ht = insertminiBack(*ht, wt);
+
+    ht = &((*ht)->next);
+    temp = temp->next;
+       }
+	   }
+	    
+	    ///printlist2(header2);
+		 return *header2;
 	}
 
 
@@ -408,9 +586,13 @@ struct node *SJF(struct node *header , struct node *header2)
 	int temp2;
 	int temp3;
 	int temp4;
+	struct node *min;
+	min = createnode(header->burst,header->arrival,header->numbering,header->prority);
 	int totalprocess;
 	struct node *header3;
+	struct node *head;
      header3 = header;
+head = header->next;
 	if(header == NULL)
 	{
       std::cout<<"LIST IS EMPTY";
@@ -435,9 +617,42 @@ struct node *SJF(struct node *header , struct node *header2)
 	   {
 		if(header2 == NULL)
 		{
+			if(header->arrival == head->arrival)
+			{
+			while(header->arrival == head->arrival)
+				{
+					if(header->burst > head->burst)
+					{
+						swapnodes(header, head);
+						/*min->burst = head->burst;
+						min->arrival = head->arrival;
+						min->numbering = head->numbering;
+						min->prority = head->prority;*/
+					}
+					/*else
+					{
+						min->burst = min->burst;
+						min->arrival = min->arrival;
+						min->numbering = min->numbering;
+						min->prority = min->prority;
+					}*/
+					head = head->next;
+				}
+				header2 = createmininode(header->burst);
+			/*while(header->numbering != min->numbering)
+			{
+				header = header->next;
+			}
+			header = header3;
+			header = moveBeginning(header, min);
+			}*/
+			header = header->next;
+			}
+			else
 			 header2 = createmininode(header->arrival);
-		}
-		 else
+			header = header->next;
+	   }
+		 else    //saying a header2 has already been created
 		 {   
 			/*if(i == header3->arrival)
 			{
@@ -461,47 +676,23 @@ struct node *SJF(struct node *header , struct node *header2)
 				}
 				header = header->next;
 			}
-			while(temp->next != NULL)
-		{
 			struct node *tp;
-		    tp = temp->next;
+		    
+			while(temp->next != NULL)
+		  {   
+			tp = temp->next;
 			while(tp != NULL)
 			{
           if(temp->burst >= tp->burst)
 		  {//putting another function here for a swap unless you focus on thier arrival time if they are equal if they are 
+		     if(temp->burst == tp->burst)
+			 {
 		    if(temp->arrival > tp->arrival)
 			{
-             temp1 = temp->burst;
-			 temp->burst = tp->burst;
-			 tp->burst = temp1;
-
-            temp2 = temp->arrival;
-			 temp->arrival = tp->arrival;
-			 tp->arrival = temp2;
-
-			 temp3 = temp->prority;
-			 temp->prority = tp->prority;
-			 tp->prority = temp3;
-
-			 temp4 = temp->numbering;
-			 temp->numbering = tp->numbering;
-			 tp->numbering = temp4;
+           swapnodes(temp,tp);
 			}
-             temp1 = temp->burst;
-			 temp->burst = tp->burst;
-			 tp->burst = temp1;
-
-            temp2 = temp->arrival;
-			 temp->arrival = tp->arrival;
-			 tp->arrival = temp2;
-
-			 temp3 = temp->prority;
-			 temp->prority = tp->prority;
-			 tp->prority = temp3;
-
-			 temp4 = temp->numbering;
-			 temp->numbering = tp->numbering;
-			 tp->numbering = temp4;
+			 }
+            swapnodes(temp,tp);
 		  }
 		  tp = tp->next;
 		  }
@@ -531,12 +722,12 @@ struct node *SJF(struct node *header , struct node *header2)
 		 return header2;
 		 }
 
-   if(prem == 1)
+  /* if(prem == 1)
    {
 	std::cout<<"This is the preemptive mode";
    }
-
-	   }
+*/
+	}
 
 void display(struct node *header2)
 {
