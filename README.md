@@ -41,7 +41,7 @@ void sortburst(struct node **, int);
 void printlist(struct node *header);
 
 struct node *FSFC(struct node *, struct node **);
-struct node *SJF(struct node * , struct node * );
+struct node *SJF(struct node * , struct node **);
 void PRIORITY(int, int , int);
 void RR(int , int );
 
@@ -202,7 +202,8 @@ switch(output)
 		case 2:{
 			std::cout<<"This is Shortest Job First"<<endl;
 			header2 = NULL;
-	       SJF(header, header2);
+	       newheader = SJF(header, &header2);
+		   cout<<"\nreturned success";
 			break;
 		}
 		
@@ -577,80 +578,74 @@ else
 
 
 
-struct node *SJF(struct node *header , struct node *header2)
+struct node *SJF(struct node *header , struct node **header2)
 {
 	if(prem == 0 )
 	{
 	std::cout<<"We are running a non-preemptive shortest job first scheduler";
-    int temp1;
+  /*  int temp1;
 	int temp2;
 	int temp3;
 	int temp4;
 	struct node *min;
-	min = createnode(header->burst,header->arrival,header->numbering,header->prority);
+	min = createnode(header->burst,header->arrival,header->numbering,header->prority);*/
+	int num = 0;
 	int totalprocess;
-	struct node *header3;
+	struct node **header3;
 	struct node *head;
-     header3 = header;
-head = header->next;
+	struct node *temp;
+	struct node *tmp;
+	tmp = NULL;	
+	temp = header;
+     header3 = header2;
+
 	if(header == NULL)
 	{
       std::cout<<"LIST IS EMPTY";
 	}
 	else
 	{
-		while(header != NULL)
-		{
-
-		 totalprocess = header->numbering;	
-         
-		     header = header->next;
-		}
+    totalprocess = count(header);
+    cout<<"\n";
+    cout<<totalprocess<<"\n";
 	}
-
-	 header = header3;
     
-	struct node *temp;	
-	temp = NULL;
+	int total = totalprocess + 1;
+	int cnt = 0;
 	 
-	 for(int i=0; i<totalprocess; i++)
+	 for(int i=0; i<total; i++)
 	   {
-		if(header2 == NULL)
+		if(*header2 == NULL)
 		{
-			if(header->arrival == head->arrival)
+			 head = temp->next;
+			 
+			if(temp->arrival == head->arrival)
 			{
-			while(header->arrival == head->arrival)
-				{
-					if(header->burst > head->burst)
-					{
-						swapnodes(header, head);
-						/*min->burst = head->burst;
-						min->arrival = head->arrival;
-						min->numbering = head->numbering;
-						min->prority = head->prority;*/
+				
+    	    	while(temp->arrival == head->arrival)
+	        	{
+	        		cnt++;
+	        		head = head->next;
+	  	      	if(head == NULL)
+	        		{
+	        			break;
 					}
-					/*else
-					{
-						min->burst = min->burst;
-						min->arrival = min->arrival;
-						min->numbering = min->numbering;
-						min->prority = min->prority;
-					}*/
-					head = head->next;
-				}
-				header2 = createmininode(header->burst);
-			/*while(header->numbering != min->numbering)
-			{
-				header = header->next;
-			}
-			header = header3;
-			header = moveBeginning(header, min);
-			}*/
-			header = header->next;
-			}
+  		        
+        }
+	        	
+		     	sortburst(&temp,cnt+1);	
+		     	printlist(temp);
+		     	cout<<"\n";
+		     	*header3 = createmininode(temp->arrival);
+		     	cout<<temp->arrival<<"\n";
+		     	
+		 }
+	
 			else
-			 header2 = createmininode(header->arrival);
-			header = header->next;
+			{
+			 *header3 = createmininode(temp->arrival);
+
+		     }
 	   }
 		 else    //saying a header2 has already been created
 		 {   
@@ -659,75 +654,96 @@ head = header->next;
 				header3 = header3->next;
 			}
 			a = header3->burst-1;*/
-			if(header->arrival == i ||  header->arrival < i)
+			if(temp->arrival <= i )
 			{
-			if(temp == NULL)
+			if(tmp == NULL)
 			{
-            temp = createnode(header->burst, header->arrival, header->prority, header->numbering);
+            tmp = createnode(temp->burst, temp->arrival, temp->prority, temp->numbering);
+            cout<<tmp->burst<<"\n";
+            temp = temp->next;
+            num++;
 			}
 			else
 			{
-				if(header->burst > temp->burst)
+				if(temp->burst > tmp->burst)
 				{
-					temp = insertBack(temp, header->burst, header->arrival, header->prority,header->numbering);
+					tmp = insertBack(tmp, temp->burst, temp->arrival, temp->prority,temp->numbering);
 				}
 				else{
-					temp = insertFront(temp, header->burst, header->arrival, header->prority,header->numbering);
+					tmp = insertFront(tmp, temp->burst, temp->arrival, temp->prority,temp->numbering);
 				}
-				header = header->next;
+			temp = temp->next;
+			num++;
 			}
-			struct node *tp;
-		    
-			while(temp->next != NULL)
-		  {   
-			tp = temp->next;
-			while(tp != NULL)
-			{
-          if(temp->burst >= tp->burst)
-		  {//putting another function here for a swap unless you focus on thier arrival time if they are equal if they are 
-		     if(temp->burst == tp->burst)
-			 {
-		    if(temp->arrival > tp->arrival)
-			{
-           swapnodes(temp,tp);
-			}
-			 }
-            swapnodes(temp,tp);
-		  }
-		  tp = tp->next;
-		  }
-		     temp = temp->next;
 		}
-		 }
-		 else
-		 {
-         header2 = insertminiBack(header2, (header2->burst + temp->burst) - temp->arrival);
-		 header2 = header2->next;
-		 temp = temp->next;
-		 }
+		else
+		{
+				if(tmp == NULL)
+			{
+            tmp = createnode(temp->burst, temp->arrival, temp->prority, temp->numbering);
+            temp = temp->next;
+            num++;
+			}
+			else
+			{
+				if(temp->burst > tmp->burst)
+				{
+					tmp = insertBack(tmp, temp->burst, temp->arrival, temp->prority,temp->numbering);
+				}
+				else{
+					tmp = insertFront(tmp, temp->burst, temp->arrival, temp->prority,temp->numbering);
+				}
+			temp = temp->next;
+			num++;
+			}
+		}
 		 }
 	   }
 
-	   while(temp != NULL)
+		if(num == total-1)
+		{
+		sortburst(&tmp, num);
+		
+		
+		int a,b,wt;
+		int final;
+
+	   while(tmp != NULL)
 	   {
-		 header2 = insertminiBack(header2, (header2->burst + temp->burst) - temp->arrival);
-		 header2 = header2->next;
-		 temp = temp->next;
+
+		 a = (*header3)->burst;
+   
+         b = tmp->burst;
+    
+        wt = b + a;
+       final = wt - tmp->arrival;
+        *header3 = insertminiBack(*header3, final);
+       
+         header3 = &((*header3)->next);
+        tmp = tmp->next;
 	   }
+    }
 		 //i need to put the header to read the arrival time of each  process that has the same arrival time and pick the smallest and whilist
 		 //picking the smallest, also putting it in another ll, hmm, i think that will work, after each iteration. okay, tommorow we will work
 		 //with putting the ll in a loop and in that loop, it checks if it the arrival time behind it has shorter burst time, to evaluate what will hqppen,
 		 //but normally, we are to check it in a loop to know which process whill be picked after it has ran the amountvof burst time
 		 //and then putting the ones that are not rady in another struct node* or ll i guess;
-		 return header2;
+		 
+	
+      // printlist2(header2);
+
+		 return *header3;
+	}
 		 }
 
   /* if(prem == 1)
    {
 	std::cout<<"This is the preemptive mode";
    }
+
 */
-	}
+      
+	
 
 void display(struct node *header2)
 {
@@ -778,7 +794,7 @@ void display(struct node *header2)
 
 	while(temp_no2->next != NULL)
 	{
-		cout<<"Process"<<a<<"waiting time is "<<temp_no2->burst<<"ms \n";
+		cout<<"Process "<<a<<" waiting time is "<<temp_no2->burst<<"ms \n";
 		avgtime += temp_no2->burst;
 		temp_no2 = temp_no2->next;
 		a++;
