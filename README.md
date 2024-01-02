@@ -1,4 +1,4 @@
-//  CMPE351
+//CMPE351
 //PROJECT TO SIMULATE THE SERVICE OF JOBS IN CPU SCHEDULING USING BOTH PREEMPTIVE AND NON PREEMPTIVE 
 #include<stdio.h>
 #include<iostream>
@@ -12,12 +12,20 @@ using namespace std;
 
 int globalstop = 1;
 int prem= 0;
+int fcfs = 0;
+int sjf = 0;
+int priority = 0;
+int rr = 0;
+int sjfprem = 0;
+int priorityprem = 0;
+int scheduling = 0;
 
 struct node{
 	int burst;
 	int arrival;
 	int prority;
 	int numbering;
+	int waitingTime;
 	struct node *next;
 };
 
@@ -34,8 +42,9 @@ void insertAfter(struct node *, int, int, int,int);
 struct node *deleteFront(struct node *);
 void deleteAfter(struct node *afternode);
 struct node *moveBeginning(struct node *header, struct node *nodetobegin);
-void display(struct node *);
+void display(struct node *,struct node *,struct node *,struct node *,struct node *,struct node *);
 struct node *swapnodes(struct node *,struct node *);
+struct node *removeNode(struct node *header, int numbering);
 int count(struct node *);
 void printlist2(struct node *header2);
 void sortarrival(struct node **, int);
@@ -50,6 +59,13 @@ struct node *SJFPREEMP(struct node *, struct node **);
 struct node *PRIORITY(struct node * , struct node **);
 struct node *PRIORITYPREEMP(struct node *, struct node **);
 struct node *RR(struct node* ,struct node **, int );
+
+void displayrr(struct node *);
+void displaypriority(struct node *);
+void displaysjf(struct node *);
+void displayfsfc(struct node *);
+void displayprioritypreemp(struct node *);
+void displaysjfpreemp(struct node *);
 
 int main(int argc, char* argv[])
 {
@@ -89,14 +105,7 @@ int main(int argc, char* argv[])
 	 char digit_str[2];
 	 int cnt;
 	 string premmode;
-	 if(prem == 1)
-	 {
-		premmode = "ON";
-	 }
-	 else
-	 {
-		premmode = "OFF";
-	 }
+     string scheduler;
 	 
 	  ifstream input(inputFile);
 
@@ -134,6 +143,11 @@ int main(int argc, char* argv[])
       	struct node *header = NULL;
 	struct node *header2 ;
 	struct node *newheader;
+	struct node *newheader2;
+	struct node *newheader3;
+	struct node *newheader4;
+	struct node *newheader5;
+	struct node *newheader6;
 	int item_1, item_2, item_3, item_4;
 	item_4 = 1;
 	 int a = 0;
@@ -141,15 +155,11 @@ int main(int argc, char* argv[])
 	 char c;
 	 char digit_str[2];
 	 int cnt;
+	 string scheduler;
 	 string premmode;
- if(prem == 1)
-	 {
-		premmode = "ON";
-	 }
-	 else
-	 {
-		premmode = "OFF";
-	 }
+	 
+	 
+    
       
        header = createnode(5, 0, 3, 1);
        header = insertBack(header, 4, 1, 2, 2);
@@ -184,8 +194,37 @@ int main(int argc, char* argv[])
 	int output;
 	while(globalstop == 1)
 	{
-std::cout << "These are the various options you can choose from:\n 1. Scheduling\n 2. Preemptive ( " <<premmode<< ") \n 3. Show Output\n 4. Exit\n";
-std::cout<<"Option >";
+		if(prem == 1)
+	 {
+		premmode = "ON";
+	 }
+	 else 
+	 {
+		premmode = "OFF";
+	 }
+	 
+	 
+	 if(scheduling == 1)
+	 {
+	 	scheduler = "First Come First Serve";
+	 }
+	 else if(scheduling == 2)
+	 {
+	 scheduler = "Shortest Job First";	
+	 }
+	 else if(scheduling == 3)
+	 {
+	 	scheduler = "Priority Scheduler";
+	 }
+	 else if(scheduling == 4)
+	 {
+	 	scheduler = "Round Robin";
+	 }
+	 else
+	 { scheduler = "none";
+	 }
+std::cout << "These are the various options you can choose from:\n 1. Scheduling ("<<scheduler<<")\n 2. Preemptive ("<<premmode<<") \n 3. Show Output\n 4. Exit\n";
+std::cout<<"Option > ";
 cin>>output;
 
 switch(output)
@@ -193,59 +232,70 @@ switch(output)
 	case 1: {
 	int schedule;	
 	std::cout<<"This is the scheduling form, Please choose which scheduking method you want"<<endl;
-	std::cout<<"1. First Come First Serve \n 2.Shortest Job First \n 3. Priority schdeuling\n 4. Round Robin" ;
-	std::cout<<"option >";
+	std::cout<<"1. First Come First Serve \n2. Shortest Job First \n3. Priority schdeuling\n4. Round Robin" ;
+	std::cout<<"option > ";
 	cin>>schedule;
 	
 	switch(schedule)
 	{
 		case 1:{
+			scheduling = 1;
 			if(prem == 0)
 			{
 			std::cout<<"This is First Come First Serve"<<endl;
-			header2 = NULL;
-	   	    newheader = FSFC(header, &header2);
+			newheader = NULL;
+	   	    newheader = FSFC(header, &newheader);
             cout<<"\nreturned success\n";
 		    cout<<"\n";
 	        }
 	        else if(prem == 1)
 	        {
- 	       cout<<"\nreturned success\n";
+ 	       cout<<"\nThis scheduler can only be ran in non preemptive mode\n";
 		   cout<<"\n";
 			}
 			break;
 		}
 		
 		case 2:{
+			scheduling = 2;
 			std::cout<<"This is Shortest Job First"<<endl;
-			header2 = NULL;
+			
 			if(prem == 0)
           {
-			 
-	       newheader = SJF(header, &header2);
+			 newheader2 = NULL;
+	       newheader2 = SJF(header, &newheader2);
 		   cout<<"\nreturned success\n";
 		   cout<<"\n";
 	       }
 	       else if(prem == 1)
 	       {
-       	   cout<<"\nreturned success\n";
-		   cout<<"\n";
+	        newheader3 = NULL;
+          newheader3 = SJFPREEMP(header, & newheader3);
+           printlist(newheader3);
+		   cout << "\nreturned success\n";
+		   cout << "\n";
+
 		   }
 			break;
 		}
 		
 		case 3:{
+			scheduling = 3;
 			std::cout<<"This is Priority Scheduling"<<endl;
-			header2 = NULL;
 			if(prem == 0)
 			{
-	       newheader = PRIORITY(header, &header2);
+			 newheader4 = NULL;
+			std::cout<<"This is the non preemptive mode"<<endl;
+	       newheader4 = PRIORITY(header, & newheader4);
 		   cout<<"\nreturned success\n";
 		   cout<<"\n";
 	        }
 	        else if(prem == 1)
-	        {
-	        	
+           {
+           	 newheader5 = NULL;
+           	std::cout<<"This is the preemptive mode"<<endl;
+           newheader5 = PRIORITYPREEMP(header, & newheader5);
+		   printlist(newheader5);	
     	   cout<<"\nreturned success\n";
 		   cout<<"\n";
 			}
@@ -254,16 +304,17 @@ switch(output)
 		}
 		
 		case 4:{
+			scheduling = 4;
 			if(prem == 0)
 			{
 			int q;
 			std::cout<<"This is Round Robin"<<endl;
-			header2 = NULL;
+			 newheader6 = NULL;
 			cout<<"\nPlease enter the quantum time: ";
 			cin>>q;
 			if(q > 0)
          	{
-           newheader = RR(header, &header2, q);
+           newheader6 = RR(header, & newheader6, q);
 		   cout<<"\nreturned success\n";
 		   cout<<"\n";
             }
@@ -312,7 +363,7 @@ switch(output)
 	}
 	
 	case 3:{
-		display(header2);
+		display(newheader,newheader2,newheader3,newheader4,newheader5,newheader6);
 		break;
 	}
 	
@@ -323,7 +374,7 @@ switch(output)
 		if(ans == 1)
 		{
 			globalstop = 0;
-			display(header2);
+			display(newheader,newheader2,newheader3,newheader4,newheader5,newheader6);
 			exit(1);
 		}
 		else 
@@ -521,6 +572,47 @@ struct node *swapnodes(struct node *temp, struct node *tp)
 			 return tp;
 }
 
+void freeList(struct node *header) 
+{
+    while (header != NULL) 
+	{
+        struct node *temp = header;
+        header = header->next;
+        delete temp;
+    }
+}
+
+struct node *removeNode(struct node *header, int numbering) 
+{
+    struct node *temp = header;
+    struct node *prev = NULL;
+
+    while (temp != NULL && temp->numbering != numbering) 
+	{
+        prev = temp;
+        temp = temp->next;
+    }
+
+    if (temp == NULL) 
+	{
+        
+        return header;
+    }
+
+    if (prev == NULL) 
+	{
+        
+        header = temp->next;
+    } 
+	else 
+	{
+        prev->next = temp->next;
+    }
+
+    free(temp);
+    return header;
+}
+
 void sortburst(struct node **header, int size)
 {
 	struct node **ht;
@@ -686,11 +778,8 @@ void printlist2(struct node **header2)
 }
 
 
-struct node *FSFC(struct node *header, struct node **header2)
+struct node *FSFC(struct node *header, struct node **newheader)
 {
-	
-	
-	cout<<"\n";
 	int a;
 	int b;
 	int final;
@@ -703,7 +792,7 @@ struct node *FSFC(struct node *header, struct node **header2)
 	struct node **ht;
 	struct node *temp2;
 	temp = header;
-	ht = header2;
+	ht = newheader;
 	tip = NULL;
 	temp2 = header;
 	cnt = count(header);
@@ -738,13 +827,14 @@ else
 }
 	   }
 	    
+	    fcfs = 1;
 	    ///printlist2(header2);
-		 return *header2;
+		 return *newheader;
 	}
 
 
 
-struct node *SJF(struct node *header , struct node **header2)
+struct node *SJF(struct node *header , struct node **newheader2)
 {
   	if(prem == 0)
       	{
@@ -763,7 +853,7 @@ struct node *SJF(struct node *header , struct node **header2)
 	tip = NULL;
 	tmp = NULL;	
 	temp = header;
-     header3 = header2;
+     header3 = newheader2;
 
 	if(header == NULL)
 	{
@@ -772,8 +862,6 @@ struct node *SJF(struct node *header , struct node **header2)
 	else
 	{
     totalprocess = count(temp);
-    cout<<"\n";
-    cout<<totalprocess<<"\n";
 	}
     
 	int total = totalprocess + 1;
@@ -781,13 +869,9 @@ struct node *SJF(struct node *header , struct node **header2)
 	 
 	 for(int i=0; i<totalprocess; i++)
 	   {
-		if(*header2 == NULL)
+		if(*newheader2 == NULL)
 		{
 			 head = temp->next;
-			 
-			
-		     	printlist(header);
-		     	std::cout<<"\n";
 		     	*header3 = createmidnode(temp->arrival,temp->numbering);
 		     	tip = createmidnode(temp->burst,temp->numbering);
 		     	//i am going to create a temporary struct to acesss the lowest temp, we will access it
@@ -805,12 +889,8 @@ struct node *SJF(struct node *header , struct node **header2)
 			   numbering = temp4->numbering; 
 			
 				 *header3 = insertmidBack(*header3,temp->burst - temp->next->arrival,numbering);
-		        cout<<"Header2\n";
-			    //printlist2(header3);
-		     	cout<<temp->next->numbering<<"\n";
-		     
-		     
-		     printlist(header);
+		       
+
 	   }
 		 else    //saying a header2 has already been created
 		 {   
@@ -820,12 +900,11 @@ struct node *SJF(struct node *header , struct node **header2)
 			if(tmp == NULL)
 			{
             tmp = createnode(temp->burst, temp->arrival, temp->prority, temp->numbering);
-            cout<<"temp numbering for "<<tmp->numbering<<"\n";
             num++;
 			}
 			else
 			{
-				if(temp->prority > tmp->prority)
+				if(temp->burst > tmp->burst)
 				{
 					tmp = insertBack(tmp, temp->burst, temp->arrival, temp->prority,temp->numbering);
 				}
@@ -858,7 +937,6 @@ struct node *SJF(struct node *header , struct node **header2)
 		 }
 	   }
 
-       cout<<tmp->numbering;
       
 		if(num == totalprocess-1)
 		{
@@ -894,18 +972,104 @@ struct node *SJF(struct node *header , struct node **header2)
       // printlist2(header2);
       //printlist(header);
 
-		 return *header3;
+        sjf = 1;
+		 return *newheader2;
 	}
 		 }
 
-struct node *SJFPREEMP(struct node *header, struct node **header2)
-{
-	std::cout<<"We are running a preemptive shortest job first scheduler";
-	
-	
+struct node *SJFPREEMP(struct node *header, struct node **newheader3)
+ {
+ 	printlist(header);
+    std::cout << "We are running a preemptive shortest scheduler\n";
+
+    struct node *waitingtimeht = NULL;
+    int current = 0;
+    int process = count(header);
+    struct node *head = header;  
+
+    struct node **header3;
+    header3 = newheader3;
+    
+    struct node *headercopy = NULL;
+    struct node *copytemp = header;
+    while (copytemp != NULL)
+	 {
+	 	if(headercopy == NULL)
+	 	{
+	 		headercopy = createnode(copytemp->burst, copytemp->arrival, copytemp->prority, copytemp->numbering);
+		 }
+		 else
+		 {
+        headercopy = insertBack(headercopy, copytemp->burst, copytemp->arrival, copytemp->prority, copytemp->numbering);
+    }
+        copytemp = copytemp->next;
+    }
+
+    while (process > 0)
+	 {
+        struct node *min = NULL;
+        struct node *temp = headercopy;
+
+        while (temp != NULL && temp->arrival <= current)
+		 {
+            if (min == NULL || temp->burst < min->burst || (temp->burst == min->burst && temp->arrival < min->arrival))
+			 {
+                min = temp;
+            }
+            temp = temp->next;
+        }
+
+        if (min != NULL)
+		 {
+            min->burst--;
+
+            struct node *waitingTemp = headercopy;
+            while (waitingTemp != NULL) 
+			{
+                if (waitingTemp->arrival <= current && waitingTemp->numbering != min->numbering)
+		 		{
+                    waitingTemp->waitingTime++;
+                }
+                waitingTemp = waitingTemp->next;
+            }
+    
+            if (min->burst == 0) 
+			{
+				
+                int final;
+                final = min->waitingTime;
+                
+                if(process == 1)
+                {
+                final++;	
+				}
+				
+                if (*header3 == NULL)
+				 {
+                    *header3 = createmidnode(final, min->numbering);
+                 } 
+				else 
+				{
+                    *header3 = insertmidBack(*header3, final, min->numbering);
+                }
+                process--;
+
+                headercopy = removeNode(headercopy, min->numbering);
+            }
+        }
+
+        current++;
+    }
+
+    printlist(header);
+    //printlist2(header2);
+    
+    sjfprem = 1;
+    
+    return *newheader3;
 }
       
-      struct node *PRIORITY(struct node *header, struct node **header2)
+      struct node *PRIORITY(struct node *header, struct node **newheader4)
       {
       	if(prem == 0)
       	{
@@ -925,7 +1089,7 @@ struct node *SJFPREEMP(struct node *header, struct node **header2)
 	tip = NULL;
 	tmp = NULL;	
 	temp = header;
-     header3 = header2;
+     header3 = newheader4;
     head = header;
 
 	if(header == NULL)
@@ -935,8 +1099,6 @@ struct node *SJFPREEMP(struct node *header, struct node **header2)
 	else
 	{
     totalprocess = count(temp);
-    cout<<"\n";
-    cout<<totalprocess<<"\n";
 	}
     
 	int total = totalprocess + 1;
@@ -945,11 +1107,9 @@ struct node *SJFPREEMP(struct node *header, struct node **header2)
 	 
 	 for(int i=0; i<totalprocess; i++)
 	   {
-		if(*header2 == NULL)
+		if(*newheader4 == NULL)
 		{
 				
-		     	printlist(header);
-		     	cout<<"\n";
 		     	*header3 = createmidnode(temp->arrival,temp->numbering);
 		     	tip = createmidnode(temp->burst,temp->numbering);
 		     	//i am going to create a temporary struct to acesss the lowest temp, we will access it
@@ -967,12 +1127,8 @@ struct node *SJFPREEMP(struct node *header, struct node **header2)
 			   numbering = temp4->numbering; 
 			
 				 *header3 = insertmidBack(*header3,temp->burst - temp->next->arrival,numbering);
-		        cout<<"Header2\n";
-			    //printlist2(header3);
-		     	cout<<temp->next->numbering<<"\n";
-		     
-		     
-		     printlist(header);
+    
+
 	   }
 		 else    //saying a header2 has already been created
 		 {   
@@ -982,7 +1138,7 @@ struct node *SJFPREEMP(struct node *header, struct node **header2)
 			if(tmp == NULL)
 			{
             tmp = createnode(temp->burst, temp->arrival, temp->prority, temp->numbering);
-            cout<<"temp numbering for "<<tmp->numbering<<"\n";
+
             num++;
 			}
 			else
@@ -1020,8 +1176,6 @@ struct node *SJFPREEMP(struct node *header, struct node **header2)
 		 }
 	   }
 
-       cout<<tmp->numbering;
-      
 		if(num == totalprocess-1)
 		{
 		sortarrival(&tmp, num);
@@ -1056,124 +1210,107 @@ struct node *SJFPREEMP(struct node *header, struct node **header2)
       // printlist2(header2);
       //printlist(header);
 
-		 return *header3;
+        priority = 1;
+		 return *newheader4;
       	
 	  }
 }
 
-struct node *PRIORITYPREEMP(struct node *header, struct node **header2)
+struct node *PRIORITYPREEMP(struct node *header, struct node **newheader5)
 {
-	std::cout<<"We are running a preemptive priority scheduler";
-	int num = 0;
-	int process;
-	int res = 0;
-	int max,final;
-	int a = 0;
-	int totalnum;
-	int totalprocess = 0;
-	struct node **header3;
-	struct node *head;
-	struct node *ht;
-	struct node *temp;
- 	struct node *tmp;
-	struct node *hd;
-	struct node *tip;
-	struct node *min;
-	int minimum;
-	
-	min = createmidnode(temp->prority,0);
-	tip = NULL;
-	temp = header;
-	head = header;
-    header3 = header2;   
-    process = count(header);
-    
-    while(temp != NULL)
+    std::cout << "We are running a preemptive priority scheduler";
+
+    struct node *waitingtimeht = NULL;
+    int current = 0;
+    struct node **header3;
+    header3 = newheader5;
+
+    struct node *headercopy = NULL;
+    struct node *copytemp = header;
+    while (copytemp != NULL)
     {
-    	totalprocess = totalprocess + temp->burst;
-    	temp = temp->next;
-	}
-	temp = head;
-	std::cout<<totalprocess;
-	min = temp;
-	
-	while(totalprocess != 0)
-	{
-		while(temp->arrival == a)
-		{
-			if(min->prority > temp->prority)
-			{   
-            	if(tmp == NULL)
-				{
-					createnode(minimum, a,min->prority,min->numbering);
-				}
-				else
-				{
-				tmp = insertBack(tmp, minimum,a,min->prority,min->numbering);
-				}
-			
-				min->prority = temp->prority;
-				min->numbering = temp->numbering;
-				minimum = temp->burst;
-				
-				if(num >= minimum)
-				{
-					res+=num;
-					tip = insertmidBack(tip,res,temp->numbering); 
-				}
-				
-		if(tip == NULL)
-		{
-			num++;
-			tip = createmidnode(0,min->numbering);
-			minimum--;
-		}
-		else
-		{
-			num++;
-			res +=minimum; 
-			tip = insertmidBack(tip,minimum,min->numbering);
-			minimum--;
-		}
-				
-			}
-			else if(min->prority == temp->prority)
-			{
-				min->prority = temp->prority;
-				min->numbering = temp->numbering;
-				minimum = temp->burst;
-				
-				
-		if(tip == NULL)
-		{
-			num++;
-			tip = createmidnode(0,min->numbering);
-			minimum--;
-		}
-		else
-		{
-			num++;
-			res +=minimum; 
-			tip = insertmidBack(tip,minimum,min->numbering);
-			minimum--;
-		}
-			}
-			else
-			{
-				
-			temp = insertBack(temp, temp->burst,temp->arrival,temp->prority,temp->numbering);
-							
-			}
-			temp = temp->next;
-		}
-		
-		a++;		
-		totalprocess--;
-	}
-	
+        if (headercopy == NULL)
+        {
+            headercopy = createnode(copytemp->burst, copytemp->arrival, copytemp->prority, copytemp->numbering);
+        }
+        else
+        {
+            headercopy = insertBack(headercopy, copytemp->burst, copytemp->arrival, copytemp->prority, copytemp->numbering);
+        }
+        copytemp = copytemp->next;
+    }
+
+    int process = count(headercopy);
+    struct node *head = headercopy;
+
+    while (process > 0)
+    {
+        struct node *min = NULL;
+        struct node *temp = headercopy;
+
+        while (temp != NULL && temp->arrival <= current)
+        {
+            if (min == NULL || temp->prority < min->prority || (temp->prority == min->prority && temp->arrival < min->arrival))
+            {
+                min = temp;
+            }
+            temp = temp->next;
+        }
+
+        if (min != NULL)
+        {
+           
+
+            min->burst--;
+            
+            struct node *waitingTemp;
+			waitingTemp = headercopy;
+            
+            while (waitingTemp != NULL)
+            {
+                if (waitingTemp->arrival <= current && waitingTemp->numbering != min->numbering)
+                {
+                	printlist(waitingTemp);
+                    waitingTemp->waitingTime = waitingTemp->waitingTime + 1 ;
+                }
+                waitingTemp = waitingTemp->next;
+            }
+
+            if (min->burst == 0)
+            {
+                int final;
+                final = min->waitingTime;
+
+               /* if (process == 1)
+                {
+                    final++;
+                }*/
+
+                if (*header3 == NULL)
+                {
+                    *header3 = createmidnode(final, min->numbering);
+                }
+                else
+                {
+                    *header3 = insertmidBack(*header3, final, min->numbering);
+                }
+                process--;
+
+                headercopy = removeNode(headercopy, min->numbering);
+            }
+        }
+
+        current++;
+    }
+    printlist(header);
+
+    priorityprem = 1;
+
+    return *newheader5;
 }
 
-struct node *RR(struct node *header ,struct node **header2, int quantum )
+
+struct node *RR(struct node *header ,struct node **newheader6, int quantum )
 {
 	std::cout<<"This is Round Robin scheduling";
 	int num;
@@ -1193,10 +1330,26 @@ struct node *RR(struct node *header ,struct node **header2, int quantum )
 	struct node *tip;
 	
 	tip = NULL;
-	temp = header;
-	head = header;
-    header3 = header2;   
+    header3 = newheader6;   
     process = count(header);
+    
+    struct node *headercopy = NULL;
+    struct node *copytemp = header;
+    while (copytemp != NULL)
+	 {
+	 	if(headercopy == NULL)
+	 	{
+	 		headercopy = createnode(copytemp->burst, copytemp->arrival, copytemp->prority, copytemp->numbering);
+		 }
+		 else
+		 {
+        headercopy = insertBack(headercopy, copytemp->burst, copytemp->arrival, copytemp->prority, copytemp->numbering);
+    }
+        copytemp = copytemp->next;
+    }
+    
+   	temp = headercopy;
+	head = headercopy;
     
     while(temp != NULL)
     {
@@ -1258,7 +1411,7 @@ while (totalprocess != 0)
 		}
 		}
 		final = max - head->burst - head->arrival;
-		if(*header2 == NULL)
+		if(*newheader6 == NULL)
 		{
 			*header3 = createmidnode(final,a);
 		}
@@ -1270,66 +1423,150 @@ while (totalprocess != 0)
 		a++;
 		head = head->next;
 	}
-	return *header2;
+	
+	rr = 1;
+	
+	return *newheader6;
 }
 	
 
-void display(struct node *header2)
+void displaysjfpreemp(struct node *newheader3)
 {
+	cout<<"\n This scheduler is the Shortest Job First Preemptive scheduler Waiting time\n";
+	
 	double a = 1;
 	double avgtime = 0;
     double average;
 	struct node *temp_no2;
-	temp_no2 = header2;
+	
+	 struct node *headercopy = NULL;
+    struct node *copytemp = newheader3;
+    while (copytemp != NULL)
+	 {
+	 	if(headercopy == NULL)
+	 	{
+	 		headercopy = createnode(copytemp->burst, copytemp->arrival, copytemp->prority, copytemp->numbering);
+		 }
+		 else
+		 {
+        headercopy = insertBack(headercopy, copytemp->burst, copytemp->arrival, copytemp->prority, copytemp->numbering);
+    }
+        copytemp = copytemp->next;
+    }
+	
+	temp_no2 = headercopy;
     int temp1;
 	int temp2;
 	int temp3;
 	int temp4;
 	int num;
-	if(header2 == NULL)
+	if(headercopy == NULL)
 	{
       cout<<"LIST IS EMPTY";
 	}
 	else
 	{
 		struct node *temp;
-		num = count(header2);
-		/*while(header2->next != NULL)
-		{
-		    temp = header2->next;
-			while(temp != NULL)
-			{
-          if(header2->numbering > temp->numbering)
-		  {
-             temp1 = header2->burst;
-			 header2->burst = temp->burst;
-			 temp->burst = temp1;
-
-             temp2 = header2->arrival;
-			 header2->arrival = temp->arrival;
-			 temp->arrival = temp2;
-
-			 temp3 = header2->prority;
-			 header2->burst = temp->burst;
-			 temp->burst = temp3;
-
-			 temp4 = header2->numbering;
-			 header2->numbering = temp->numbering;
-			 temp->numbering = temp4;
-		  }
-		  temp = temp->next;
-		  }
-		     header2 = header2->next;
-		}
-	}*/
-	sortnumbering(&header2,num);
+		num = count(headercopy);
+	   sortnumbering(&headercopy,num);
+	}
+    
+	while(headercopy != NULL)
+	{
+		cout<<"Process "<<a<<" waiting time is "<<headercopy->burst<<"ms \n";
+		avgtime += headercopy->burst;
+		headercopy = headercopy->next;
+		a++;
 	}
 
-	while(temp_no2 != NULL)
+	average = avgtime/(a-1);
+	std::cout<<"Average waiting time is "<<average<<"ms\n";
+}
+
+void displayprioritypreemp(struct node *newheader5)
+{
+	cout<<"\n This scheduler is the Priority Preemptive scheduler Waiting time\n";
+	
+	double a = 1;
+	double avgtime = 0;
+    double average;
+	struct node *temp_no2;
+	
+	struct node *headercopy = NULL;
+    struct node *copytemp = newheader5;
+    while (copytemp != NULL)
+	 {
+	 	if(headercopy == NULL)
+	 	{
+	 		headercopy = createnode(copytemp->burst, copytemp->arrival, copytemp->prority, copytemp->numbering);
+		 }
+		 else
+		 {
+        headercopy = insertBack(headercopy, copytemp->burst, copytemp->arrival, copytemp->prority, copytemp->numbering);
+    }
+        copytemp = copytemp->next;
+    }
+	
+	temp_no2 = headercopy;
+    int temp1;
+	int temp2;
+	int temp3;
+	int temp4;
+	int num;
+	if(headercopy == NULL)
 	{
-		cout<<"Process "<<a<<" waiting time is "<<temp_no2->burst<<"ms \n";
-		avgtime += temp_no2->burst;
-		temp_no2 = temp_no2->next;
+      cout<<"LIST IS EMPTY";
+	}
+	else
+	{
+		struct node *temp;
+		num = count(headercopy);
+	    sortnumbering(&headercopy,num);
+	}
+	//printlist(temp_no2);
+    
+	while(headercopy != NULL)
+	{
+		cout<<"Process "<<a<<" waiting time is "<<headercopy->burst<<"ms \n";
+		avgtime += headercopy->burst;
+		headercopy = headercopy->next;
+		a++;
+	}
+
+	average = avgtime/(a-1);
+	std::cout<<"Average waiting time is "<<average<<"ms\n";
+}
+
+	void displayfsfc(struct node *newheader)
+{
+	cout<<"\n This scheduler is the First Come First Serve scheduler Waiting time\n";
+	double a = 1;
+	double avgtime = 0;
+    double average;
+	struct node *temp_no2;
+	temp_no2 = newheader;
+    int temp1;
+	int temp2;
+	int temp3;
+	int temp4;
+	int num;
+	if(newheader == NULL)
+	{
+      cout<<"LIST IS EMPTY";
+	}
+	else
+	{
+		struct node *temp;
+		num = count(newheader);
+	sortnumbering(&newheader,num);
+	}
+	//printlist(temp_no2);
+    
+	while(newheader != NULL)
+	{
+		cout<<"Process "<<a<<" waiting time is "<<newheader->burst<<"ms \n";
+		avgtime += newheader->burst;
+		newheader = newheader->next;
 		a++;
 	}
 
@@ -1337,3 +1574,153 @@ void display(struct node *header2)
 	std::cout<<"Average waiting time is "<<average<<"ms";
 	std::cout<<endl;
 }
+
+void displaysjf(struct node *newheader2)
+{
+	cout<<"\n This scheduler is the Shortest Job First Non Preemptive scheduler Waiting time\n";
+	double a = 1;
+	double avgtime = 0;
+    double average;
+	struct node *temp_no2;
+	temp_no2 = newheader2;
+    int temp1;
+	int temp2;
+	int temp3;
+	int temp4;
+	int num;
+	if(newheader2 == NULL)
+	{
+      cout<<"LIST IS EMPTY";
+	}
+	else
+	{
+		struct node *temp;
+		num = count(newheader2);
+	sortnumbering(&newheader2,num);
+	}
+	//printlist(temp_no2);
+    
+	while(newheader2 != NULL)
+	{
+		cout<<"Process "<<a<<" waiting time is "<<newheader2->burst<<"ms \n";
+		avgtime += newheader2->burst;
+		newheader2 = newheader2->next;
+		a++;
+	}
+
+	average = avgtime/(a-1);
+	std::cout<<"Average waiting time is "<<average<<"ms";
+	std::cout<<endl;
+}
+
+void displaypriority(struct node *newheader4)
+{
+	cout<<"\n This scheduler is the Priority Non Preemptive Scheduler Waiting time\n";
+	
+	double a = 1;
+	double avgtime = 0;
+    double average;
+	struct node *temp_no2;
+	temp_no2 = newheader4;
+    int temp1;
+	int temp2;
+	int temp3;
+	int temp4;
+	int num;
+	if(newheader4 == NULL)
+	{
+      cout<<"LIST IS EMPTY";
+	}
+	else
+	{
+		struct node *temp;
+		num = count(newheader4);
+	sortnumbering(&newheader4,num);
+	}
+	//printlist(temp_no2);
+    
+	while(newheader4 != NULL)
+	{
+		cout<<"Process "<<a<<" waiting time is "<<newheader4->burst<<"ms \n";
+		avgtime += newheader4->burst;
+		newheader4 = newheader4->next;
+		a++;
+	}
+
+	average = avgtime/(a-1);
+	std::cout<<"Average waiting time is "<<average<<"ms";
+	std::cout<<endl;
+}
+
+void displayrr(struct node *newheader6)
+{
+	cout<<"\n This scheduler is the Round Robin scheduler Waiting time\n";
+	
+	double a = 1;
+	double avgtime = 0;
+    double average;
+	struct node *temp_no2;
+	temp_no2 = newheader6;
+    int temp1;
+	int temp2;
+	int temp3;
+	int temp4;
+	int num;
+	if(newheader6 == NULL)
+	{
+      cout<<"LIST IS EMPTY";
+	}
+	else
+	{
+		struct node *temp;
+		num = count(newheader6);
+	sortnumbering(&newheader6,num);
+	}
+//	printlist(temp_no2);
+    
+	while(newheader6 != NULL)
+	{
+		cout<<"Process "<<a<<" waiting time is "<<newheader6->burst<<"ms \n";
+		avgtime += newheader6->burst;
+		newheader6 = newheader6->next;
+		a++;
+	}
+
+	average = avgtime/(a-1);
+	std::cout<<"Average waiting time is "<<average<<"ms";
+	std::cout<<endl;
+}
+
+void display(struct node *newheader,struct node *newheader2, struct node *newheader3, struct node *newheader4, struct node *newheader5, struct node *newheader6)
+{
+	if(fcfs == 1)
+	{
+		displayfsfc(newheader);
+	}
+	
+	if(sjf == 1)
+	{
+		displaysjf(newheader2);
+	}
+	
+	if(priority == 1)
+	{
+		displaypriority(newheader4);
+	}
+	
+	if(rr == 1)
+	{
+		displayrr(newheader6);
+	}
+	
+	if(sjfprem == 1)
+	{
+		displaysjfpreemp(newheader3);
+	}
+	
+	if(priorityprem == 1)
+	{
+		displayprioritypreemp(newheader5);
+	}
+}
+
