@@ -120,14 +120,17 @@ int main(int argc, char* argv[])
 	 
 	  ifstream input(inputFile.c_str());
 
-    if (input.is_open()) {
-        while (input.get(c)) {
-            if (isdigit(c)) {
+    if (input.is_open()) 
+	  {
+        while (input.get(c)) 
+	     { 
+            if (isdigit(c)) 
+			{
                 digit_str[0] = c;
                 digit_str[1] = '\0';
                 mini_arr[a] = atoi(digit_str);
                 a++;
-            }
+            
 
             if (a == 3) {
                 a--;
@@ -135,15 +138,19 @@ int main(int argc, char* argv[])
                 item_2 = mini_arr[a - 1];
                 item_1 = mini_arr[a - 2];
                 a = 0;
-            }
+            
 
-            if (header == NULL) {
+            if (header == NULL) 
+			{
                 header = createnode(item_1, item_2, item_3, item_4);
 				item_4++;
-            } else {
+            } else 
+			{
                 header = insertBack(header, item_1, item_2, item_3, item_4);
 				item_4++;
             }
+           }
+          }
         }
     } else {
         std::cout << "Error opening input file: " << inputFile << endl;
@@ -990,7 +997,6 @@ struct node *SJF(struct node *header , struct node **newheader2)
 
 struct node *SJFPREEMP(struct node *header, struct node **newheader3)
  {
- 	printlist(header);
     std::cout << "We are running a preemptive shortest scheduler\n";
 
     struct node *waitingtimeht = NULL;
@@ -1072,7 +1078,6 @@ struct node *SJFPREEMP(struct node *header, struct node **newheader3)
         current++;
     }
 
-    printlist(header);
     //printlist2(header2);
     
     sjfprem = 1;
@@ -1255,8 +1260,6 @@ struct node *PRIORITYPREEMP(struct node *header, struct node **newheader5)
 
     while (process > 0)
     {
-        std::cout << "Current Time: " << current << std::endl;
-
         struct node *min = NULL;
         struct node *temp = headercopy;
 
@@ -1271,31 +1274,23 @@ struct node *PRIORITYPREEMP(struct node *header, struct node **newheader5)
 
         if (min != NULL)
         {
-            std::cout << "Selected Process: " << min->numbering << " Burst Time: " << min->burst << std::endl;
-
             min->burst--;
 
             struct node *waitingTemp = headercopy;
 
-            // Inside the waiting time calculation loop
+            
 			while (waitingTemp != NULL)
 			{
     		if(waitingTemp->arrival <= current)
     		{
-        	std::cout << "Before waitingTemp: ";
-        	printlist(headercopy);
-
         	if(waitingTemp->numbering != min->numbering)
         	{
             waitingTemp->waitingTime++;
         	}
 
-        	if(waitingTemp->numbering == 1) {
+        	/*if(waitingTemp->numbering == 1) {
             std::cout << "Waiting Time for Process 1: " << waitingTemp->waitingTime << std::endl;
-        	}
-
-        	std::cout << "After waitingTemp: ";
-        	printlist(headercopy);
+        	}*/
     		}
    			 waitingTemp = waitingTemp->next;
 }
@@ -1305,8 +1300,6 @@ struct node *PRIORITYPREEMP(struct node *header, struct node **newheader5)
             {
                 int final;
                 final = min->waitingTime;
-
-                std::cout << "Process Completed: " << min->numbering << " Waiting Time: " << min->waitingTime << std::endl;
 
                 if (*header3 == NULL)
                 {
@@ -1318,12 +1311,8 @@ struct node *PRIORITYPREEMP(struct node *header, struct node **newheader5)
                 }
                 process--;
 
-                std::cout << "Before removeNode: ";
-                printlist(headercopy);
-
                 headercopy = removeNode(headercopy, min->numbering);
 
-                std::cout << "After removeNode: ";
                 
             }
         }
@@ -1331,8 +1320,6 @@ struct node *PRIORITYPREEMP(struct node *header, struct node **newheader5)
         current++;
     }
 
-    std::cout << "Final Process Order: ";
-    printlist(header);
 
     priorityprem = 1;
 
