@@ -70,34 +70,44 @@ void displaysjfpreemp(struct node *);
 
 int main(int argc, char* argv[])
 {
-  /*
+
 	if (argc != 5) {
-        std::cout<< "Usage: " << argv[0] << " -f inputFileName -o outputFileName" <<endl;
+        std::cout<< "Usage: " << argv[0] << " -f input.txt -o output.txt" <<endl;
         return 1;
     }
 
-    string inputFile;
-    string outputFile;
+    string inputFile = "input.txt";
+    string outputFile = "output.txt";
 
-    for (int i = 1; i < argc; ++i) {
+    for (int i = 1; i < argc; ++i)
+	 {
          string arg = argv[i];
       
-        if (arg == "-f" && i + 1 < argc) {
+        if (arg == "-f" && i + 1 < argc)
+		 {
             inputFile = argv[i + 1];
         }
 
-        if (arg == "-o" && i + 1 < argc) {
+        if (arg == "-o" && i + 1 < argc)
+		 {
             outputFile = argv[i + 1];
         }
     }
 
-    if (inputFile.empty() || outputFile.empty()) {
+    if (inputFile.empty() || outputFile.empty()) 
+	{
        std::cout<<"Invalid command-line arguments. Usage: " << argv[0] << " -f inputFileName -o outputFileName" <<endl;
         return 1;
     }
 	
 	struct node *header = NULL;
 	struct node *header2 ;
+	struct node *newheader;
+	struct node *newheader2;
+	struct node *newheader3;
+	struct node *newheader4;
+	struct node *newheader5;
+	struct node *newheader6;
 	int item_1, item_2, item_3, item_4;
 	item_4 = 1;
 	 int a = 0;
@@ -108,7 +118,7 @@ int main(int argc, char* argv[])
 	 string premmode;
      string scheduler;
 	 
-	  ifstream input(inputFile);
+	  ifstream input(inputFile.c_str());
 
     if (input.is_open()) {
         while (input.get(c)) {
@@ -139,9 +149,9 @@ int main(int argc, char* argv[])
         std::cout << "Error opening input file: " << inputFile << endl;
         return 1;
     }
-     */
+     
       
-      	struct node *header = NULL;
+      /*	struct node *header = NULL;
 	struct node *header2 ;
 	struct node *newheader;
 	struct node *newheader2;
@@ -166,8 +176,10 @@ int main(int argc, char* argv[])
        header = insertBack(header, 4, 1, 2, 2);
        header = insertBack(header, 3, 1, 1, 3);
        header = insertBack(header, 4, 2, 2, 4);
-       header = insertBack(header, 3, 3, 1, 5);
+       header = insertBack(header, 3, 3, 1, 5);*/
        
+       
+       printlist(header);
        //start from here after getting header
       int size = 0;
 	  size = count(header);
