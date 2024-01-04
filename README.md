@@ -69,6 +69,13 @@ void displayfsfc(struct node *);
 void displayprioritypreemp(struct node *);
 void displaysjfpreemp(struct node *);
 
+void writefsfc(std::ostream& , struct node* );
+void writesjf(std::ostream& , struct node* );
+void writesjfprem(std::ostream& , struct node* );
+void writepriority(std::ostream& , struct node* );
+void writepriorityprem(std::ostream& , struct node* );
+void writerr(std::ostream& , struct node* );
+
 int main(int argc, char* argv[])
 {
 
@@ -78,7 +85,7 @@ int main(int argc, char* argv[])
     }
 
     string inputFile = "input.txt";
-    string outputFile = "output.txt";
+    string outputfile = "output.txt";
 
     for (int i = 1; i < argc; ++i)
 	 {
@@ -91,11 +98,11 @@ int main(int argc, char* argv[])
 
         if (arg == "-o" && i + 1 < argc)
 		 {
-            outputFile = argv[i + 1];
+            outputfile = argv[i + 1];
         }
     }
 
-    if (inputFile.empty() || outputFile.empty()) 
+    if (inputFile.empty() || outputfile.empty()) 
 	{
        std::cout<<"Invalid command-line arguments. Usage: " << argv[0] << " -f inputFileName -o outputFileName" <<endl;
         return 1;
@@ -185,9 +192,7 @@ int main(int argc, char* argv[])
        header = insertBack(header, 3, 1, 1, 3);
        header = insertBack(header, 4, 2, 2, 4);
        header = insertBack(header, 3, 3, 1, 5);*/
-       
-       
-       printlist(header);
+      
        //start from here after getting header
       int size = 0;
 	  size = count(header);
@@ -288,7 +293,6 @@ switch(output)
 	       {
 	        newheader3 = NULL;
           newheader3 = SJFPREEMP(header, & newheader3);
-           printlist(newheader3);
 		   cout << "\nreturned success\n";
 		   cout << "\n";
 
@@ -311,8 +315,7 @@ switch(output)
            {
            	 newheader5 = NULL;
            	std::cout<<"This is the preemptive mode"<<endl;
-           newheader5 = PRIORITYPREEMP(header, & newheader5);
-		   printlist(newheader5);	
+           newheader5 = PRIORITYPREEMP(header, & newheader5);	
     	   cout<<"\nreturned success\n";
 		   cout<<"\n";
 			}
@@ -393,6 +396,7 @@ switch(output)
 		{
 			globalstop = 0;
 			display(newheader,newheader2,newheader3,newheader4,newheader5,newheader6);
+			writetofile(outputfile,newheader,newheader2,newheader3,newheader4,newheader5,newheader6);
 			exit(1);
 		}
 		else 
@@ -1563,29 +1567,45 @@ void displayprioritypreemp(struct node *newheader5)
 	double avgtime = 0;
     double average;
 	struct node *temp_no2;
-	temp_no2 = newheader;
+	
+    struct node *headercopy = NULL;
+    struct node *copytemp = newheader;
+    while (copytemp != NULL)
+	 {
+	 	if(headercopy == NULL)
+	 	{
+	 		headercopy = createnode(copytemp->burst, copytemp->arrival, copytemp->prority, copytemp->numbering);
+		 }
+		 else
+		 {
+        headercopy = insertBack(headercopy, copytemp->burst, copytemp->arrival, copytemp->prority, copytemp->numbering);
+    }
+        copytemp = copytemp->next;
+    }	
+	
+	temp_no2 = headercopy;
     int temp1;
 	int temp2;
 	int temp3;
 	int temp4;
 	int num;
-	if(newheader == NULL)
+	if(headercopy == NULL)
 	{
       cout<<"LIST IS EMPTY";
 	}
 	else
 	{
 		struct node *temp;
-		num = count(newheader);
-	sortnumbering(&newheader,num);
+		num = count(headercopy);
+	sortnumbering(&headercopy,num);
 	}
 	//printlist(temp_no2);
     
-	while(newheader != NULL)
+	while(headercopy != NULL)
 	{
-		cout<<"Process "<<a<<" waiting time is "<<newheader->burst<<"ms \n";
-		avgtime += newheader->burst;
-		newheader = newheader->next;
+		cout<<"Process "<<a<<" waiting time is "<<headercopy->burst<<"ms \n";
+		avgtime += headercopy->burst;
+		headercopy = headercopy->next;
 		a++;
 	}
 
@@ -1601,29 +1621,44 @@ void displaysjf(struct node *newheader2)
 	double avgtime = 0;
     double average;
 	struct node *temp_no2;
-	temp_no2 = newheader2;
+	
+	struct node *headercopy = NULL;
+    struct node *copytemp = newheader2;
+    while (copytemp != NULL)
+	 {
+	 	if(headercopy == NULL)
+	 	{
+	 		headercopy = createnode(copytemp->burst, copytemp->arrival, copytemp->prority, copytemp->numbering);
+		 }
+		 else
+		 {
+        headercopy = insertBack(headercopy, copytemp->burst, copytemp->arrival, copytemp->prority, copytemp->numbering);
+    }
+        copytemp = copytemp->next;
+    }
+	temp_no2 = headercopy;
     int temp1;
 	int temp2;
 	int temp3;
 	int temp4;
 	int num;
-	if(newheader2 == NULL)
+	if(headercopy == NULL)
 	{
       cout<<"LIST IS EMPTY";
 	}
 	else
 	{
 		struct node *temp;
-		num = count(newheader2);
-	sortnumbering(&newheader2,num);
+		num = count(headercopy);
+	sortnumbering(&headercopy,num);
 	}
 	//printlist(temp_no2);
     
-	while(newheader2 != NULL)
+	while(headercopy != NULL)
 	{
-		cout<<"Process "<<a<<" waiting time is "<<newheader2->burst<<"ms \n";
-		avgtime += newheader2->burst;
-		newheader2 = newheader2->next;
+		cout<<"Process "<<a<<" waiting time is "<<headercopy->burst<<"ms \n";
+		avgtime += headercopy->burst;
+		headercopy = headercopy->next;
 		a++;
 	}
 
@@ -1640,29 +1675,44 @@ void displaypriority(struct node *newheader4)
 	double avgtime = 0;
     double average;
 	struct node *temp_no2;
-	temp_no2 = newheader4;
+	
+	struct node *headercopy = NULL;
+    struct node *copytemp = newheader4;
+    while (copytemp != NULL)
+	 {
+	 	if(headercopy == NULL)
+	 	{
+	 		headercopy = createnode(copytemp->burst, copytemp->arrival, copytemp->prority, copytemp->numbering);
+		 }
+		 else
+		 {
+        headercopy = insertBack(headercopy, copytemp->burst, copytemp->arrival, copytemp->prority, copytemp->numbering);
+    }
+        copytemp = copytemp->next;
+    }
+	temp_no2 = headercopy;
     int temp1;
 	int temp2;
 	int temp3;
 	int temp4;
 	int num;
-	if(newheader4 == NULL)
+	if(headercopy == NULL)
 	{
       cout<<"LIST IS EMPTY";
 	}
 	else
 	{
 		struct node *temp;
-		num = count(newheader4);
-	sortnumbering(&newheader4,num);
+		num = count(headercopy);
+	sortnumbering(&headercopy,num);
 	}
 	//printlist(temp_no2);
     
-	while(newheader4 != NULL)
+	while(headercopy != NULL)
 	{
-		cout<<"Process "<<a<<" waiting time is "<<newheader4->burst<<"ms \n";
-		avgtime += newheader4->burst;
-		newheader4 = newheader4->next;
+		cout<<"Process "<<a<<" waiting time is "<<headercopy->burst<<"ms \n";
+		avgtime += headercopy->burst;
+		headercopy = headercopy->next;
 		a++;
 	}
 
@@ -1679,29 +1729,44 @@ void displayrr(struct node *newheader6)
 	double avgtime = 0;
     double average;
 	struct node *temp_no2;
-	temp_no2 = newheader6;
+	
+	struct node *headercopy = NULL;
+    struct node *copytemp = newheader6;
+    while (copytemp != NULL)
+	 {
+	 	if(headercopy == NULL)
+	 	{
+	 		headercopy = createnode(copytemp->burst, copytemp->arrival, copytemp->prority, copytemp->numbering);
+		 }
+		 else
+		 {
+        headercopy = insertBack(headercopy, copytemp->burst, copytemp->arrival, copytemp->prority, copytemp->numbering);
+    }
+        copytemp = copytemp->next;
+    }
+	temp_no2 = headercopy;
     int temp1;
 	int temp2;
 	int temp3;
 	int temp4;
 	int num;
-	if(newheader6 == NULL)
+	if(headercopy == NULL)
 	{
       cout<<"LIST IS EMPTY";
 	}
 	else
 	{
 		struct node *temp;
-		num = count(newheader6);
-	sortnumbering(&newheader6,num);
+		num = count(headercopy);
+	sortnumbering(&headercopy,num);
 	}
 //	printlist(temp_no2);
     
-	while(newheader6 != NULL)
+	while(headercopy != NULL)
 	{
-		cout<<"Process "<<a<<" waiting time is "<<newheader6->burst<<"ms \n";
-		avgtime += newheader6->burst;
-		newheader6 = newheader6->next;
+		cout<<"Process "<<a<<" waiting time is "<<headercopy->burst<<"ms \n";
+		avgtime += headercopy->burst;
+		headercopy = headercopy->next;
 		a++;
 	}
 
@@ -1749,7 +1814,7 @@ void writetofile(const std::string& outputfile, struct node* newheader, struct n
 
     if (!outputFile.is_open()) 
 	{
-        std::cerr << "Error opening output file: " << filename << std::endl;
+        std::cerr << "Error opening output file: " << outputfile << std::endl;
         return;
     }
 
@@ -1775,12 +1840,12 @@ void writetofile(const std::string& outputfile, struct node* newheader, struct n
 
     if (sjfprem == 1)
     {
-        writedisplaysjfpreemp(outputFile, newheader3);
+        writesjfprem(outputFile, newheader3);
     }
 
     if (priorityprem == 1)
     {
-        writeprioritypreemp(outputFile, newheader5);
+        writepriorityprem(outputFile, newheader5);
     }
 }
 
@@ -1793,29 +1858,309 @@ void writefsfc(std::ostream& output, struct node* newheader)
     double avgtime = 0;
     double average;
     struct node* temp_no2;
-    temp_no2 = newheader;
+    
+    struct node *headercopy = NULL;
+    struct node *copytemp = newheader;
+    while (copytemp != NULL)
+	 {
+	 	if(headercopy == NULL)
+	 	{
+	 		headercopy = createnode(copytemp->burst, copytemp->arrival, copytemp->prority, copytemp->numbering);
+		 }
+		 else
+		 {
+        headercopy = insertBack(headercopy, copytemp->burst, copytemp->arrival, copytemp->prority, copytemp->numbering);
+    }
+        copytemp = copytemp->next;
+    }
+    temp_no2 = headercopy;
     int temp1;
     int temp2;
     int temp3;
     int temp4;
     int num;
-    if (newheader == NULL)
+    if (headercopy == NULL)
     {
         output << "LIST IS EMPTY";
     }
     else
     {
         struct node* temp;
-        num = count(newheader);
-        sortnumbering(&newheader, num);
+        num = count(headercopy);
+        sortnumbering(&headercopy, num);
     }
     //printlist(temp_no2);
 
-    while (newheader != NULL)
+    while (headercopy != NULL)
     {
-        output << "Process " << a << " waiting time is " << newheader->burst << "ms \n";
-        avgtime += newheader->burst;
-        newheader = newheader->next;
+        output << "Process " << a << " waiting time is " << headercopy->burst << "ms \n";
+        avgtime += headercopy->burst;
+        headercopy = headercopy->next;
+        a++;
+    }
+
+    average = avgtime / (a - 1);
+    output <<"Average waiting time is " << average << "ms";
+    output <<std::endl;
+}
+
+void writesjf(std::ostream& output, struct node* newheader2)
+{
+    output << "\n This scheduler is the Shortest Job First non-preemptive scheduler Waiting time\n";
+    double a = 1;
+    double avgtime = 0;
+    double average;
+    struct node* temp_no2;
+    
+    struct node *headercopy = NULL;
+    struct node *copytemp = newheader2;
+    while (copytemp != NULL)
+	 {
+	 	if(headercopy == NULL)
+	 	{
+	 		headercopy = createnode(copytemp->burst, copytemp->arrival, copytemp->prority, copytemp->numbering);
+		 }
+		 else
+		 {
+        headercopy = insertBack(headercopy, copytemp->burst, copytemp->arrival, copytemp->prority, copytemp->numbering);
+    }
+        copytemp = copytemp->next;
+    }
+    temp_no2 = headercopy;
+    int temp1;
+    int temp2;
+    int temp3;
+    int temp4;
+    int num;
+    if (headercopy == NULL)
+    {
+        output << "LIST IS EMPTY";
+    }
+    else
+    {
+        struct node* temp;
+        num = count(headercopy);
+        sortnumbering(&headercopy, num);
+    }
+    //printlist(temp_no2);
+
+    while (headercopy != NULL)
+    {
+        output << "Process " << a << " waiting time is " << headercopy->burst << "ms \n";
+        avgtime += headercopy->burst;
+        headercopy = headercopy->next;
+        a++;
+    }
+
+    average = avgtime / (a - 1);
+    output << "Average waiting time is " << average << "ms";
+    output << std::endl;
+}
+
+void writesjfprem(std::ostream& output, struct node* newheader3)
+{
+    output << "\n This scheduler is the Shortest Job First preemptive scheduler Waiting time\n";
+    double a = 1;
+    double avgtime = 0;
+    double average;
+    struct node* temp_no2;
+    
+    struct node *headercopy = NULL;
+    struct node *copytemp = newheader3;
+    while (copytemp != NULL)
+	 {
+	 	if(headercopy == NULL)
+	 	{
+	 		headercopy = createnode(copytemp->burst, copytemp->arrival, copytemp->prority, copytemp->numbering);
+		 }
+		 else
+		 {
+        headercopy = insertBack(headercopy, copytemp->burst, copytemp->arrival, copytemp->prority, copytemp->numbering);
+    }
+        copytemp = copytemp->next;
+    }
+    temp_no2 = headercopy;
+    int temp1;
+    int temp2;
+    int temp3;
+    int temp4;
+    int num;
+    if (headercopy == NULL)
+    {
+        output << "LIST IS EMPTY";
+    }
+    else
+    {
+        struct node* temp;
+        num = count(headercopy);
+        sortnumbering(&headercopy, num);
+    }
+    //printlist(temp_no2);
+
+    while (headercopy != NULL)
+    {
+        output << "Process " << a << " waiting time is " << headercopy->burst << "ms \n";
+        avgtime += headercopy->burst;
+        headercopy = headercopy->next;
+        a++;
+    }
+
+    average = avgtime / (a - 1);
+    output << "Average waiting time is " << average << "ms";
+    output << std::endl;
+}
+
+void writepriority(std::ostream& output, struct node* newheader4)
+{
+    output << "\n This scheduler is the Priority non-preemptive scheduler Waiting time\n";
+    double a = 1;
+    double avgtime = 0;
+    double average;
+    struct node* temp_no2;
+    
+    struct node *headercopy = NULL;
+    struct node *copytemp = newheader4;
+    while (copytemp != NULL)
+	 {
+	 	if(headercopy == NULL)
+	 	{
+	 		headercopy = createnode(copytemp->burst, copytemp->arrival, copytemp->prority, copytemp->numbering);
+		 }
+		 else
+		 {
+        headercopy = insertBack(headercopy, copytemp->burst, copytemp->arrival, copytemp->prority, copytemp->numbering);
+    }
+        copytemp = copytemp->next;
+    }
+    temp_no2 = headercopy;
+    int temp1;
+    int temp2;
+    int temp3;
+    int temp4;
+    int num;
+    if (headercopy == NULL)
+    {
+        output << "LIST IS EMPTY";
+    }
+    else
+    {
+        struct node* temp;
+        num = count(headercopy);
+        sortnumbering(&headercopy, num);
+    }
+    //printlist(temp_no2);
+
+    while (headercopy != NULL)
+    {
+        output << "Process " << a << " waiting time is " << headercopy->burst << "ms \n";
+        avgtime += headercopy->burst;
+        headercopy = headercopy->next;
+        a++;
+    }
+
+    average = avgtime / (a - 1);
+    output << "Average waiting time is " << average << "ms";
+    output << std::endl;
+}
+
+void writepriorityprem(std::ostream& output, struct node* newheader5)
+{
+    output << "\n This scheduler is the Priority preemptive scheduler Waiting time\n";
+    double a = 1;
+    double avgtime = 0;
+    double average;
+    struct node* temp_no2;
+    
+    struct node *headercopy = NULL;
+    struct node *copytemp = newheader5;
+    while (copytemp != NULL)
+	 {
+	 	if(headercopy == NULL)
+	 	{
+	 		headercopy = createnode(copytemp->burst, copytemp->arrival, copytemp->prority, copytemp->numbering);
+		 }
+		 else
+		 {
+        headercopy = insertBack(headercopy, copytemp->burst, copytemp->arrival, copytemp->prority, copytemp->numbering);
+    }
+        copytemp = copytemp->next;
+    }
+    temp_no2 = headercopy;
+    int temp1;
+    int temp2;
+    int temp3;
+    int temp4;
+    int num;
+    if (headercopy == NULL)
+    {
+        output << "LIST IS EMPTY";
+    }
+    else
+    {
+        struct node* temp;
+        num = count(headercopy);
+        sortnumbering(&headercopy, num);
+    }
+    //printlist(temp_no2);
+
+    while (headercopy != NULL)
+    {
+        output << "Process " << a << " waiting time is " << headercopy->burst << "ms \n";
+        avgtime += headercopy->burst;
+        headercopy = headercopy->next;
+        a++;
+    }
+
+    average = avgtime / (a - 1);
+    output << "Average waiting time is " << average << "ms";
+    output << std::endl;
+}
+
+void writerr(std::ostream& output, struct node* newheader6)
+{
+    output << "\n This scheduler is the Round Robin scheduler Waiting time\n";
+    double a = 1;
+    double avgtime = 0;
+    double average;
+    struct node* temp_no2;
+    
+    struct node *headercopy = NULL;
+    struct node *copytemp = newheader6;
+    while (copytemp != NULL)
+	 {
+	 	if(headercopy == NULL)
+	 	{
+	 		headercopy = createnode(copytemp->burst, copytemp->arrival, copytemp->prority, copytemp->numbering);
+		 }
+		 else
+		 {
+        headercopy = insertBack(headercopy, copytemp->burst, copytemp->arrival, copytemp->prority, copytemp->numbering);
+    }
+        copytemp = copytemp->next;
+    }
+    temp_no2 = headercopy;
+    int temp1;
+    int temp2;
+    int temp3;
+    int temp4;
+    int num;
+    if (headercopy == NULL)
+    {
+        output << "LIST IS EMPTY";
+    }
+    else
+    {
+        struct node* temp;
+        num = count(headercopy);
+        sortnumbering(&headercopy, num);
+    }
+    //printlist(temp_no2);
+
+    while (headercopy != NULL)
+    {
+        output << "Process " << a << " waiting time is " << headercopy->burst << "ms \n";
+        avgtime += headercopy->burst;
+        headercopy = headercopy->next;
         a++;
     }
 
