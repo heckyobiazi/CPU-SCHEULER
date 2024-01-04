@@ -43,6 +43,7 @@ struct node *deleteFront(struct node *);
 void deleteAfter(struct node *afternode);
 struct node *moveBeginning(struct node *header, struct node *nodetobegin);
 void display(struct node *,struct node *,struct node *,struct node *,struct node *,struct node *);
+void writetofile(const std::string& , struct node* , struct node* , struct node* , struct node* , struct node* , struct node* );
 struct node *swapnodes(struct node *,struct node *);
 struct node *removeNode(struct node *header, int numbering);
 int count(struct node *);
@@ -1740,5 +1741,86 @@ void display(struct node *newheader,struct node *newheader2, struct node *newhea
 	{
 		displayprioritypreemp(newheader5);
 	}
+}
+
+void writetofile(const std::string& outputfile, struct node* newheader, struct node* newheader2, struct node* newheader3, struct node* newheader4, struct node* newheader5, struct node* newheader6)
+{
+    std::ofstream outputFile(outputfile);
+
+    if (!outputFile.is_open()) 
+	{
+        std::cerr << "Error opening output file: " << filename << std::endl;
+        return;
+    }
+
+    if (fcfs == 1)
+    {
+        writefsfc(outputFile, newheader);
+    }
+
+    if (sjf == 1)
+    {
+        writesjf(outputFile, newheader2);
+    }
+
+    if (priority == 1)
+    {
+        writepriority(outputFile, newheader4);
+    }
+
+    if (rr == 1)
+    {
+        writerr(outputFile, newheader6);
+    }
+
+    if (sjfprem == 1)
+    {
+        writedisplaysjfpreemp(outputFile, newheader3);
+    }
+
+    if (priorityprem == 1)
+    {
+        writeprioritypreemp(outputFile, newheader5);
+    }
+}
+
+//putting this output file up up in e code
+
+void writefsfc(std::ostream& output, struct node* newheader)
+{
+    output << "\n This scheduler is the First Come First Serve scheduler Waiting time\n";
+    double a = 1;
+    double avgtime = 0;
+    double average;
+    struct node* temp_no2;
+    temp_no2 = newheader;
+    int temp1;
+    int temp2;
+    int temp3;
+    int temp4;
+    int num;
+    if (newheader == NULL)
+    {
+        output << "LIST IS EMPTY";
+    }
+    else
+    {
+        struct node* temp;
+        num = count(newheader);
+        sortnumbering(&newheader, num);
+    }
+    //printlist(temp_no2);
+
+    while (newheader != NULL)
+    {
+        output << "Process " << a << " waiting time is " << newheader->burst << "ms \n";
+        avgtime += newheader->burst;
+        newheader = newheader->next;
+        a++;
+    }
+
+    average = avgtime / (a - 1);
+    output << "Average waiting time is " << average << "ms";
+    output << std::endl;
 }
 
