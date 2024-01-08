@@ -166,7 +166,7 @@ int main(int argc, char* argv[])
     }
      
       
-    /*  	struct node *header = NULL;
+     /* 	struct node *header = NULL;
 	struct node *header2 ;
 	struct node *newheader;
 	struct node *newheader2;
@@ -187,7 +187,7 @@ int main(int argc, char* argv[])
 	 
     
       
-       header = createnode(6, 2, 1, 1);
+      header = createnode(6, 2, 1, 1);
        header = insertBack(header, 2, 5, 4, 2);
        header = insertBack(header, 8, 1, 6, 3);
        header = insertBack(header, 3, 0, 5, 4);
@@ -310,7 +310,7 @@ switch(output)
 			{
 			 newheader4 = NULL;
 			std::cout<<"This is the non preemptive mode"<<endl;
-	       newheader4 = PRIORITY(header, & newheader4);
+	       newheader4 = PRIORITY(header, &newheader4);
 		   cout<<"\nreturned success\n";
 		   cout<<"\n";
 	        }
@@ -318,7 +318,7 @@ switch(output)
            {
            	 newheader5 = NULL;
            	std::cout<<"This is the preemptive mode"<<endl;
-           newheader5 = PRIORITYPREEMP(header, & newheader5);	
+           newheader5 = PRIORITYPREEMP(header, &newheader5);	
     	   cout<<"\nreturned success\n";
 		   cout<<"\n";
 			}
@@ -863,8 +863,6 @@ else
 
 struct node *SJF(struct node *header , struct node **newheader2)
 {
-  	if(prem == 0)
-      	{
       		std::cout<<"We are running a non-preemptive shortest job first scheduler";
       		
       		int num = 0;
@@ -1036,7 +1034,6 @@ struct node *SJF(struct node *header , struct node **newheader2)
 
         sjf = 1;
 		 return *newheader2;
-	}
 		 }
 
 struct node *SJFPREEMP(struct node *header, struct node **newheader3)
@@ -1129,15 +1126,14 @@ struct node *SJFPREEMP(struct node *header, struct node **newheader3)
     return *newheader3;
 }
       
-      struct node *PRIORITY(struct node *header, struct node **newheader4)
-      {
-      	if(prem == 0)
-      	{
-      		std::cout<<"We are running a non-preemptive priority scheduler";
-     		int num = 0;
+    struct node *PRIORITY(struct node *header , struct node **newheader4)
+{
+  	  		std::cout<<"We are running a non-preemptive priority job first scheduler";
+      		
+      		int num = 0;
 	int totalprocess;
 	int numbering;
-	struct node **header3;
+	struct node **header4;
 	struct node *head;
 	struct node *ht;
 	struct node *temp4;
@@ -1151,7 +1147,7 @@ struct node *SJFPREEMP(struct node *header, struct node **newheader3)
 	t2 = NULL;
 	tmp = NULL;	
 	temp = header;
-     header3 = newheader4;
+     header4 = newheader4;
      int wt;
      
 
@@ -1172,7 +1168,7 @@ struct node *SJFPREEMP(struct node *header, struct node **newheader3)
 		if(*newheader4 == NULL)
 		{
 			 head = temp->next;
-		     	*header3 = createmidnode(temp->arrival,temp->numbering);
+		     	*header4 = createmidnode(temp->arrival,temp->numbering);
 		     	tip = createmidnode(temp->burst,temp->numbering);
 		     	wt = tip->burst;
 		     	//i am going to create a temporary struct to acesss the lowest temp, we will access it
@@ -1211,7 +1207,7 @@ struct node *SJFPREEMP(struct node *header, struct node **newheader3)
 		 	tip = tip->next;
 		     }
 		     tmp = deleteFront(tmp);
-		     if(temp->prority > tmp->prority)
+		     if(temp->burst > tmp->burst)
 				{
 					tmp = insertBack(tmp, temp->burst, temp->arrival, temp->prority,temp->numbering);
 				}
@@ -1232,7 +1228,7 @@ struct node *SJFPREEMP(struct node *header, struct node **newheader3)
 			}
 			else
 			{
-				if(temp->burst > tmp->burst)
+				if(temp->prority > tmp->prority)
 				{
 					tmp = insertBack(tmp, temp->burst, temp->arrival, temp->prority,temp->numbering);
 				}
@@ -1287,9 +1283,9 @@ struct node *SJFPREEMP(struct node *header, struct node **newheader3)
         t2 = t2->next;
         
         final = tip->burst - arr->arrival;
-        *header3 = insertmidBack(*header3, final,arr->numbering);
+        *header4 = insertmidBack(*header4, final,arr->numbering);
        
-         header3 = &((*header3)->next);
+         header4 = &((*header4)->next);
          arr = arr->next;
          tip = tip->next;
          if(t2 == NULL)
@@ -1303,9 +1299,7 @@ struct node *SJFPREEMP(struct node *header, struct node **newheader3)
 
         priority = 1;
 		 return *newheader4;
-	}
 		 }
-
 struct node *PRIORITYPREEMP(struct node *header, struct node **newheader5)
 {
     std::cout << "We are running a preemptive priority scheduler";
