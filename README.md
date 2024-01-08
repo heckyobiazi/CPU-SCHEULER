@@ -166,7 +166,7 @@ int main(int argc, char* argv[])
     }
      
       
-      /*	struct node *header = NULL;
+    /*  	struct node *header = NULL;
 	struct node *header2 ;
 	struct node *newheader;
 	struct node *newheader2;
@@ -187,11 +187,11 @@ int main(int argc, char* argv[])
 	 
     
       
-       header = createnode(5, 0, 3, 1);
-       header = insertBack(header, 4, 1, 2, 2);
-       header = insertBack(header, 3, 1, 1, 3);
-       header = insertBack(header, 4, 2, 2, 4);
-       header = insertBack(header, 3, 3, 1, 5);*/
+       header = createnode(6, 2, 1, 1);
+       header = insertBack(header, 2, 5, 4, 2);
+       header = insertBack(header, 8, 1, 6, 3);
+       header = insertBack(header, 3, 0, 5, 4);
+       header = insertBack(header, 4, 4, 7, 5);*/
       
        //start from here after getting header
       int size = 0;
@@ -255,7 +255,7 @@ switch(output)
 	int schedule;	
 	std::cout<<"This is the scheduling form, Please choose which scheduking method you want"<<endl;
 	std::cout<<"1. First Come First Serve \n2. Shortest Job First \n3. Priority schdeuling\n4. Round Robin" ;
-	std::cout<<"option > ";
+	std::cout<<"\n Option > ";
 	cin>>schedule;
 	
 	switch(schedule)
@@ -264,7 +264,7 @@ switch(output)
 			scheduling = 1;
 			if(prem == 0)
 			{
-			std::cout<<"This is First Come First Serve"<<endl;
+			std::cout<<"This is First Come First Serve Non Preemptive"<<endl;
 			newheader = NULL;
 	   	    newheader = FSFC(header, &newheader);
             cout<<"\nreturned success\n";
@@ -272,7 +272,10 @@ switch(output)
 	        }
 	        else if(prem == 1)
 	        {
- 	       cout<<"\nThis scheduler can only be ran in non preemptive mode\n";
+ 	       std::cout<<"\nThis is First Come First Serve Preemptive";
+ 	       newheader = NULL;
+ 	       newheader = FSFC(header, &newheader);
+ 	       cout<<"\nreturned success\n";
 		   cout<<"\n";
 			}
 			break;
@@ -391,12 +394,13 @@ switch(output)
 	case 4:{
 		bool ans;
 		std::cout<<"Are you sure you want to exit the simulation:(1 for yes/0 for no)";
+		std::cout<<"\n Option >";
 		cin>>ans;
 		if(ans == 1)
 		{
 			globalstop = 0;
 			display(newheader,newheader2,newheader3,newheader4,newheader5,newheader6);
-			writetofile(outputfile,newheader,newheader2,newheader3,newheader4,newheader5,newheader6);
+		  //	writetofile(outputfile,newheader,newheader2,newheader3,newheader4,newheader5,newheader6);
 			exit(1);
 		}
 		else 
@@ -872,11 +876,17 @@ struct node *SJF(struct node *header , struct node **newheader2)
 	struct node *temp4;
 	struct node *temp;
 	struct node *tmp;
+	struct node *tt;
+	struct node *t2;
+	struct node *tip2;
 	struct node *tip;
 	tip = NULL;
+	t2 = NULL;
 	tmp = NULL;	
 	temp = header;
      header3 = newheader2;
+     int wt;
+     
 
 	if(header == NULL)
 	{
@@ -891,12 +901,13 @@ struct node *SJF(struct node *header , struct node **newheader2)
 	int cnt = 0;
 	 
 	 for(int i=0; i<totalprocess; i++)
-	   {
+   {
 		if(*newheader2 == NULL)
 		{
 			 head = temp->next;
 		     	*header3 = createmidnode(temp->arrival,temp->numbering);
 		     	tip = createmidnode(temp->burst,temp->numbering);
+		     	wt = tip->burst;
 		     	//i am going to create a temporary struct to acesss the lowest temp, we will access it
 		     	//without going through the pointer to avoid changes and when we acess the lowest, we collect the temp numbering and utilize it
  	             temp4 = createnode(head->burst, head->arrival, head->prority, head->numbering);
@@ -911,19 +922,46 @@ struct node *SJF(struct node *header , struct node **newheader2)
                    }
 			   numbering = temp4->numbering; 
 			
-				 *header3 = insertmidBack(*header3,temp->burst - temp->next->arrival,numbering);
-		       
+				// *header3 = insertmidBack(*header3,temp->burst - temp->next->arrival,numbering);
+		       temp = temp->next;
 
-	   }
+	   }//end of first (if)
 		 else    //saying a header2 has already been created
-		 {   
-			if(temp->arrival <= i )
-			{
-			temp = temp->next;
+       {   
+		    if(wt < temp->arrival)
+		   {
+		 	tt = tmp;
+		 	sortburst(&tt,num);
+		 	if(t2 == NULL)
+		 	{
+	 		t2 = createnode(tmp->burst, tmp->arrival, tmp->prority, tmp->numbering);
+	 		wt = tmp->burst;
+			 }
+			 else
+		    {
+		 	t2 = insertBack(t2,tmp->burst, tmp->arrival, tmp->prority, tmp->numbering);
+		 	wt = tmp->burst + tip->burst;
+		 	tip = tip->next;
+		     }
+		     tmp = deleteFront(tmp);
+		     if(temp->burst > tmp->burst)
+				{
+					tmp = insertBack(tmp, temp->burst, temp->arrival, temp->prority,temp->numbering);
+				}
+				else
+				{
+					tmp = insertFront(tmp, temp->burst, temp->arrival, temp->prority,temp->numbering);
+				}
+		     temp = temp->next; 
+		     cnt++;
+		    }
+		 else
+		 {	
 			if(tmp == NULL)
 			{
             tmp = createnode(temp->burst, temp->arrival, temp->prority, temp->numbering);
             num++;
+            cnt++;
 			}
 			else
 			{
@@ -931,67 +969,68 @@ struct node *SJF(struct node *header , struct node **newheader2)
 				{
 					tmp = insertBack(tmp, temp->burst, temp->arrival, temp->prority,temp->numbering);
 				}
-				else{
-					tmp = insertFront(tmp, temp->burst, temp->arrival, temp->prority,temp->numbering);
-				}
-			num++;
-			}
-		}
-		else
-		{
-			temp = temp->next;
-				if(tmp == NULL)
-			{
-            tmp = createnode(temp->burst, temp->arrival, temp->prority, temp->numbering);
-            num++;
-			}
-			else
-			{
-				if(temp->prority > tmp->prority)
+				else
 				{
-					tmp = insertBack(tmp, temp->burst, temp->arrival, temp->prority,temp->numbering);
-				}
-				else{
 					tmp = insertFront(tmp, temp->burst, temp->arrival, temp->prority,temp->numbering);
 				}
 			num++;
+			cnt++;
 			}
-		}
-		 }
-	   }
-
-      
-		if(num == totalprocess-1)
+			 temp = temp->next;
+     	 } 
+	    }
+	}
+	    
+		if(cnt == totalprocess - 1)
 		{
 		sortarrival(&tmp, num);
 		sortburst(&tmp, num);
 		
+		tip2 = t2;
+		
+		if(tip2 != NULL)
+		{
+		while(tip2->next != NULL)
+		{
+			tip2 = tip2->next;
+		}
+		tip2->next = tmp;
+	    }
+	    else if(tip2 == NULL)
+	    {
+	    	t2 = tmp;
+		}
+		
 		
 		int a,b,wt;
 		int final;
+		
+		struct node *arr;
 
-	   while(tmp != NULL)
+       arr = t2;
+	   while(t2 != NULL)
 	   {
 
 		 a = tip->burst;
-         b = tmp->burst;
-         wt = b + a;
-         
-       tip = insertmidBack(tip, wt, tmp->numbering);
-        tip = tip->next;
+         b = t2->burst;
+         wt = b + a;  
+        tip = insertmidBack(tip, wt, t2->numbering);
+        //tip = tip->next;
         
-        tmp = tmp->next;
-        if(tmp == NULL)
+        t2 = t2->next;
+        
+        final = tip->burst - arr->arrival;
+        *header3 = insertmidBack(*header3, final,arr->numbering);
+       
+         header3 = &((*header3)->next);
+         arr = arr->next;
+         tip = tip->next;
+         if(t2 == NULL)
         {
         	break;
 		}
-        final = wt - tmp->arrival;
-        *header3 = insertmidBack(*header3, final,tmp->numbering);
-       
-         header3 = &((*header3)->next);
 	   }
     }
-	 
       // printlist2(header2);
       //printlist(header);
 
@@ -1095,23 +1134,26 @@ struct node *SJFPREEMP(struct node *header, struct node **newheader3)
       	if(prem == 0)
       	{
       		std::cout<<"We are running a non-preemptive priority scheduler";
-      		
-   		
-      		int num = 0;
+     		int num = 0;
 	int totalprocess;
-	int temp1,temp2,temp3;
-	struct node *temp4;
+	int numbering;
 	struct node **header3;
 	struct node *head;
 	struct node *ht;
+	struct node *temp4;
 	struct node *temp;
 	struct node *tmp;
+	struct node *tt;
+	struct node *t2;
+	struct node *tip2;
 	struct node *tip;
 	tip = NULL;
+	t2 = NULL;
 	tmp = NULL;	
 	temp = header;
      header3 = newheader4;
-    head = header;
+     int wt;
+     
 
 	if(header == NULL)
 	{
@@ -1124,19 +1166,19 @@ struct node *SJFPREEMP(struct node *header, struct node **newheader3)
     
 	int total = totalprocess + 1;
 	int cnt = 0;
-	int numbering;
 	 
 	 for(int i=0; i<totalprocess; i++)
-	   {
+   {
 		if(*newheader4 == NULL)
 		{
-				
+			 head = temp->next;
 		     	*header3 = createmidnode(temp->arrival,temp->numbering);
 		     	tip = createmidnode(temp->burst,temp->numbering);
+		     	wt = tip->burst;
 		     	//i am going to create a temporary struct to acesss the lowest temp, we will access it
 		     	//without going through the pointer to avoid changes and when we acess the lowest, we collect the temp numbering and utilize it
- 	            temp4 = createnode(head->burst, head->arrival, head->prority, head->numbering);
- 	            ht = head->next;
+ 	             temp4 = createnode(head->burst, head->arrival, head->prority, head->numbering);
+ 	              ht = head->next;
  	            	while(ht != NULL)
  	            	{
  	            	if(temp4->burst > ht->burst)
@@ -1147,95 +1189,122 @@ struct node *SJFPREEMP(struct node *header, struct node **newheader3)
                    }
 			   numbering = temp4->numbering; 
 			
-				 *header3 = insertmidBack(*header3,temp->burst - temp->next->arrival,numbering);
-    
+				// *header3 = insertmidBack(*header3,temp->burst - temp->next->arrival,numbering);
+		       temp = temp->next;
 
-	   }
+	   }//end of first (if)
 		 else    //saying a header2 has already been created
-		 {   
-			if(temp->arrival <= i )
-			{
-			temp = temp->next;
+       {   
+		    if(wt < temp->arrival)
+		   {
+		 	tt = tmp;
+		 	sortpriority(&tt,num);
+		 	if(t2 == NULL)
+		 	{
+	 		t2 = createnode(tmp->burst, tmp->arrival, tmp->prority, tmp->numbering);
+	 		wt = tmp->burst;
+			 }
+			 else
+		    {
+		 	t2 = insertBack(t2,tmp->burst, tmp->arrival, tmp->prority, tmp->numbering);
+		 	wt = tmp->burst + tip->burst;
+		 	tip = tip->next;
+		     }
+		     tmp = deleteFront(tmp);
+		     if(temp->prority > tmp->prority)
+				{
+					tmp = insertBack(tmp, temp->burst, temp->arrival, temp->prority,temp->numbering);
+				}
+				else
+				{
+					tmp = insertFront(tmp, temp->burst, temp->arrival, temp->prority,temp->numbering);
+				}
+		     temp = temp->next; 
+		     cnt++;
+		    }
+		 else
+		 {	
 			if(tmp == NULL)
 			{
             tmp = createnode(temp->burst, temp->arrival, temp->prority, temp->numbering);
-
             num++;
+            cnt++;
 			}
 			else
 			{
-				if(temp->prority > tmp->prority)
+				if(temp->burst > tmp->burst)
 				{
 					tmp = insertBack(tmp, temp->burst, temp->arrival, temp->prority,temp->numbering);
 				}
-				else{
-					tmp = insertFront(tmp, temp->burst, temp->arrival, temp->prority,temp->numbering);
-				}
-			num++;
-			}
-		}
-		else
-		{
-			temp = temp->next;
-				if(tmp == NULL)
-			{
-            tmp = createnode(temp->burst, temp->arrival, temp->prority, temp->numbering);
-            num++;
-			}
-			else
-			{
-				if(temp->prority > tmp->prority)
+				else
 				{
-					tmp = insertBack(tmp, temp->burst, temp->arrival, temp->prority,temp->numbering);
-				}
-				else{
 					tmp = insertFront(tmp, temp->burst, temp->arrival, temp->prority,temp->numbering);
 				}
 			num++;
+			cnt++;
 			}
-		}
-		 }
-	   }
-
-		if(num == totalprocess-1)
+			 temp = temp->next;
+     	 } 
+	    }
+	}
+	    
+		if(cnt == totalprocess - 1)
 		{
 		sortarrival(&tmp, num);
 		sortpriority(&tmp, num);
 		
+		tip2 = t2;
+		
+		if(tip2 != NULL)
+		{
+		while(tip2->next != NULL)
+		{
+			tip2 = tip2->next;
+		}
+		tip2->next = tmp;
+	    }
+	    else if(tip2 == NULL)
+	    {
+	    	t2 = tmp;
+		}
+		
 		
 		int a,b,wt;
 		int final;
+		
+		struct node *arr;
 
-	   while(tmp != NULL)
+       arr = t2;
+	   while(t2 != NULL)
 	   {
 
 		 a = tip->burst;
-         b = tmp->burst;
-         wt = b + a;
-         
-       tip = insertmidBack(tip, wt, tmp->numbering);
-        tip = tip->next;
+         b = t2->burst;
+         wt = b + a;  
+        tip = insertmidBack(tip, wt, t2->numbering);
+        //tip = tip->next;
         
-        tmp = tmp->next;
-        if(tmp == NULL)
+        t2 = t2->next;
+        
+        final = tip->burst - arr->arrival;
+        *header3 = insertmidBack(*header3, final,arr->numbering);
+       
+         header3 = &((*header3)->next);
+         arr = arr->next;
+         tip = tip->next;
+         if(t2 == NULL)
         {
         	break;
 		}
-        final = wt - tmp->arrival;
-        *header3 = insertmidBack(*header3, final,tmp->numbering);
-       
-         header3 = &((*header3)->next);
 	   }
     }
-	 
       // printlist2(header2);
       //printlist(header);
 
         priority = 1;
 		 return *newheader4;
-      	
-	  }
-}
+	}
+		 }
 
 struct node *PRIORITYPREEMP(struct node *header, struct node **newheader5)
 {
@@ -1807,6 +1876,7 @@ void display(struct node *newheader,struct node *newheader2, struct node *newhea
 		displayprioritypreemp(newheader5);
 	}
 }
+
 
 void writetofile(const std::string& outputfile, struct node* newheader, struct node* newheader2, struct node* newheader3, struct node* newheader4, struct node* newheader5, struct node* newheader6)
 {
