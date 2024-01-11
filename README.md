@@ -807,59 +807,77 @@ void printlist2(struct node **header2)
 
 struct node *FSFC(struct node *header, struct node **newheader)
 {
-	int a;
-	int b;
-	int final;
-	int cnt;
-	int num = 0;
-	int wt = 0;
-	prem = 0;
-	struct node *temp;
-	struct node *tip;
-	struct node **ht;
-	struct node *temp2;
-	temp = header;
-	ht = newheader;
-	tip = NULL;
-	temp2 = header;
-	cnt = count(header);
-	   while(temp != NULL)
-	   {num++;
-	if (*ht == NULL)
-	 {
-    *ht = createmininode(0);
-    tip = createmininode(0);
-} 
-else 
-{ 
-//should write a statement for if a temp has finished processing and theres no process yet.
-    a = tip->burst;
-    b = temp->burst;
-    wt = b + a;
-  tip = insertminiBack(tip, wt);
-  tip = tip->next;
-  
-    a = tip->burst;
-       
-    temp = temp->next;
-    if(cnt < num)
+struct node *headercopy = NULL;
+    struct node *copytemp = header;
+    while (copytemp != NULL)
     {
-    	break;
-	}
-	else
-	{
-   final = a - temp->arrival;
-   *ht = insertminiBack(*ht, final);
+        if (headercopy == NULL)
+        {
+            headercopy = createnode(copytemp->burst, copytemp->arrival, copytemp->prority, copytemp->numbering);
+        }
+        else
+        {
+            headercopy = insertBack(headercopy, copytemp->burst, copytemp->arrival, copytemp->prority, copytemp->numbering);
+        }
+        copytemp = copytemp->next;
+    }
+
+    int process = count(headercopy);
+
+    struct node **header3;
+    header3 = newheader;
+
+    int current_time = 0; 
+
+    while (process != 0)
+    {
+        struct node *min = NULL;
+        struct node *temp = headercopy;
+
+        while (temp != NULL)
+        {
+            if (temp->arrival <= current_time && (min == NULL || temp->arrival < min->arrival))
+            {
+                min = temp;
+            }
+            temp = temp->next;
+        }
+        
+        if (min != NULL)
+        {
+            int final;
+            final = current_time + min->waitingTime - min->arrival; 
+
+            
+
+            if (*newheader == NULL)
+            {
+                *newheader = createmidnode(final, min->numbering);
+            }
+            else
+            {
+                *newheader = insertmidBack(*newheader, final, min->numbering);
+            }
+            process--;
+
+            current_time += min->burst; 
+
+           
+            headercopy = removeNode(headercopy, min->numbering);
+        }
+        else
+        {
+            if (headercopy != NULL)
+            {
+                current_time = headercopy->arrival;
+            }
+        }
+    }
     
-    ht = &((*ht)->next);
-   }
+    fcfs= 1;
+
+    return *newheader;
 }
-	   }
-	    
-	    fcfs = 1;
-	    ///printlist2(header2);
-		 return *newheader;
-	}
 
 
 
