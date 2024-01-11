@@ -13,6 +13,7 @@ using namespace std;
 int globalstop = 1;
 int prem= 0;
 int fcfs = 0;
+int fcfsprem = 0;
 int sjf = 0;
 int priority = 0;
 int rr = 0;
@@ -66,10 +67,12 @@ void displayrr(struct node *);
 void displaypriority(struct node *);
 void displaysjf(struct node *);
 void displayfsfc(struct node *);
+void displayfsfcprem(struct node *);
 void displayprioritypreemp(struct node *);
 void displaysjfpreemp(struct node *);
 
 void writefsfc(std::ostream& , struct node* );
+void writefsfcprem(std::ostream& output, struct node* );
 void writesjf(std::ostream& , struct node* );
 void writesjfprem(std::ostream& , struct node* );
 void writepriority(std::ostream& , struct node* );
@@ -275,6 +278,7 @@ switch(output)
  	       std::cout<<"\nThis is First Come First Serve Preemptive";
  	       newheader = NULL;
  	       newheader = FSFC(header, &newheader);
+ 	       fcfsprem = 1; 
  	       cout<<"\nreturned success\n";
 		   cout<<"\n";
 			}
@@ -1448,7 +1452,7 @@ void displayprioritypreemp(struct node *newheader5)
 
 	void displayfsfc(struct node *newheader)
 {
-	cout<<"\n This scheduler is the First Come First Serve scheduler Waiting time\n";
+	cout<<"\n This scheduler is the First Come First Serve Non- Preemptive scheduler Waiting time\n";
 	double a = 1;
 	double avgtime = 0;
     double average;
@@ -1499,6 +1503,61 @@ void displayprioritypreemp(struct node *newheader5)
 	std::cout<<"Average waiting time is "<<average<<"ms";
 	std::cout<<endl;
 }
+
+void displayfsfcprem(struct node *newheader)
+{
+	cout<<"\n This scheduler is the First Come First Serve Preemptive scheduler Waiting time\n";
+	double a = 1;
+	double avgtime = 0;
+    double average;
+	struct node *temp_no2;
+	
+    struct node *headercopy = NULL;
+    struct node *copytemp = newheader;
+    while (copytemp != NULL)
+	 {
+	 	if(headercopy == NULL)
+	 	{
+	 		headercopy = createnode(copytemp->burst, copytemp->arrival, copytemp->prority, copytemp->numbering);
+		 }
+		 else
+		 {
+        headercopy = insertBack(headercopy, copytemp->burst, copytemp->arrival, copytemp->prority, copytemp->numbering);
+    }
+        copytemp = copytemp->next;
+    }	
+	
+	temp_no2 = headercopy;
+    int temp1;
+	int temp2;
+	int temp3;
+	int temp4;
+	int num;
+	if(headercopy == NULL)
+	{
+      cout<<"LIST IS EMPTY";
+	}
+	else
+	{
+		struct node *temp;
+		num = count(headercopy);
+	sortnumbering(&headercopy,num);
+	}
+	//printlist(temp_no2);
+    
+	while(headercopy != NULL)
+	{
+		cout<<"Process "<<a<<" waiting time is "<<headercopy->burst<<"ms \n";
+		avgtime += headercopy->burst;
+		headercopy = headercopy->next;
+		a++;
+	}
+
+	average = avgtime/(a-1);
+	std::cout<<"Average waiting time is "<<average<<"ms";
+	std::cout<<endl;
+}
+
 
 void displaysjf(struct node *newheader2)
 {
@@ -1668,6 +1727,11 @@ void display(struct node *newheader,struct node *newheader2, struct node *newhea
 		displayfsfc(newheader);
 	}
 	
+	if(fcfsprem == 1)
+	{
+		displayfsfcprem(newheader);
+	}
+	
 	if(sjf == 1)
 	{
 		displaysjf(newheader2);
@@ -1709,6 +1773,11 @@ void writetofile(const std::string& outputfile, struct node* newheader, struct n
     {
         writefsfc(outputFile, newheader);
     }
+    
+     if (fcfsprem == 1)
+    {
+        writefsfcprem(outputFile, newheader);
+    }
 
     if (sjf == 1)
     {
@@ -1740,7 +1809,7 @@ void writetofile(const std::string& outputfile, struct node* newheader, struct n
 
 void writefsfc(std::ostream& output, struct node* newheader)
 {
-    output << "\n This scheduler is the First Come First Serve scheduler Waiting time\n";
+    output << "\n This scheduler is the First Come First Serve Non - Preemptive scheduler Waiting time\n";
     double a = 1;
     double avgtime = 0;
     double average;
@@ -1790,6 +1859,60 @@ void writefsfc(std::ostream& output, struct node* newheader)
     output <<"Average waiting time is " << average << "ms";
     output <<std::endl;
 }
+
+void writefsfcprem(std::ostream& output, struct node* newheader)
+{
+    output << "\n This scheduler is the First Come First Serve Preemptive scheduler Waiting time\n";
+    double a = 1;
+    double avgtime = 0;
+    double average;
+    struct node* temp_no2;
+    
+    struct node *headercopy = NULL;
+    struct node *copytemp = newheader;
+    while (copytemp != NULL)
+	 {
+	 	if(headercopy == NULL)
+	 	{
+	 		headercopy = createnode(copytemp->burst, copytemp->arrival, copytemp->prority, copytemp->numbering);
+		 }
+		 else
+		 {
+        headercopy = insertBack(headercopy, copytemp->burst, copytemp->arrival, copytemp->prority, copytemp->numbering);
+    }
+        copytemp = copytemp->next;
+    }
+    temp_no2 = headercopy;
+    int temp1;
+    int temp2;
+    int temp3;
+    int temp4;
+    int num;
+    if (headercopy == NULL)
+    {
+        output << "LIST IS EMPTY";
+    }
+    else
+    {
+        struct node* temp;
+        num = count(headercopy);
+        sortnumbering(&headercopy, num);
+    }
+    //printlist(temp_no2);
+
+    while (headercopy != NULL)
+    {
+        output << "Process " << a << " waiting time is " << headercopy->burst << "ms \n";
+        avgtime += headercopy->burst;
+        headercopy = headercopy->next;
+        a++;
+    }
+
+    average = avgtime / (a - 1);
+    output <<"Average waiting time is " << average << "ms";
+    output <<std::endl;
+}
+
 
 void writesjf(std::ostream& output, struct node* newheader2)
 {
